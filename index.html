@@ -188,35 +188,21 @@
     <div class="top">
       <div class="eyebrow">Stima busta paga</div>
       <h1 class="blue">Previsione <em>stipendio</em></h1>
-      <div class="sub">Inserisci ore di volo e giornate del mese. Le tariffe sono quelle reali estratte dalla tua app Sector Pay. È una <b>stima</b> (±qualche decina di €).</div>
     </div>
 
-    <div class="card">
-      <div class="label">Parte fissa mensile</div>
-      <div class="fixgrid">
-        <div class="fixcol inc">
-          <h4>Entrate fisse</h4>
-          <div class="frow"><span>Stipendio base</span><span>307,69</span></div>
-          <div class="frow"><span>Ind. agg. volo</span><span>60,83</span></div>
-          <div class="frow"><span>IVMG</span><span>738,58</span></div>
-          <div class="fsub"><span>Totale</span><b>1.107,10</b></div>
-        </div>
-        <div class="fixcol ded">
-          <h4>Deduzioni fisse</h4>
-          <div class="frow"><span>Contributi INPS</span><span>204,18</span></div>
-          <div class="frow"><span>Sindacato</span><span>5,00</span></div>
-          <div class="frow"><span>Add. regionale</span><span>11,60</span></div>
-          <div class="frow"><span>Add. comunale</span><span>7,89</span></div>
-          <div class="fsub"><span>Totale</span><b>228,67</b></div>
-        </div>
-      </div>
-      <div class="fsub" style="margin-top:14px"><span>Base netta fissa (automatica)</span><b id="base-show">€ 0,00</b></div>
-      <div class="rates">
-        <div class="rate">Ora volo (HFA) <b>5,70 €</b></div>
-        <div class="rate">Ora da n.1 (CSS) <b>6,88 €</b></div>
-        <div class="rate">Festivo / Ferie <b>35,03 €</b></div>
-        <div class="rate">Nightstop <b>42,00 €</b></div>
-        <div class="rate">Diaria (volo/standby) <b>40,00 €</b></div>
+    <div class="result blue" id="prev-result">
+      <div class="r-label">Netto stimato</div>
+      <div class="r-amount" id="prev-net">€ 0,00</div>
+      <div class="r-note" id="prev-note"></div>
+    </div>
+
+    <div class="card cal-card" id="compose-card">
+      <button class="cal-toggle"><span>🧩 Come si compone</span><span class="chev">›</span></button>
+      <div class="cal-body">
+        <div class="pb-row"><span>Base fissa netta</span><b id="pb-base">€ 0,00</b></div>
+        <div class="pb-row"><span>Sector Pay (IVO: volo)</span><b id="pb-ivo">€ 0,00</b></div>
+        <div class="pb-row"><span>Diarie esentasse</span><b id="pb-fly">€ 0,00</b></div>
+        <div class="pb-row"><span>Altre voci tassabili (netto)</span><b id="pb-tax">€ 0,00</b></div>
       </div>
     </div>
 
@@ -260,30 +246,49 @@
       </div>
     </div>
 
-    <div class="result blue" id="prev-result">
-      <div class="r-label">Netto stimato</div>
-      <div class="r-amount" id="prev-net">€ 0,00</div>
-      <div class="r-note" id="prev-note"></div>
+    <div class="card cal-card" id="fixed-card">
+      <button class="cal-toggle"><span>📐 Parte fissa mensile</span><span class="chev">›</span></button>
+      <div class="cal-body">
+        <div class="fixgrid">
+          <div class="fixcol inc">
+            <h4>Entrate fisse</h4>
+            <div class="frow"><span>Stipendio base</span><span>307,69</span></div>
+            <div class="frow"><span>Ind. agg. volo</span><span>60,83</span></div>
+            <div class="frow"><span>IVMG</span><span>738,58</span></div>
+            <div class="fsub"><span>Totale</span><b>1.107,10</b></div>
+          </div>
+          <div class="fixcol ded">
+            <h4>Deduzioni fisse</h4>
+            <div class="frow"><span>Contributi INPS</span><span>204,18</span></div>
+            <div class="frow"><span>Sindacato</span><span>5,00</span></div>
+            <div class="frow"><span>Add. regionale</span><span>11,60</span></div>
+            <div class="frow"><span>Add. comunale</span><span>7,89</span></div>
+            <div class="fsub"><span>Totale</span><b>228,67</b></div>
+          </div>
+        </div>
+        <div class="fsub" style="margin-top:14px"><span>Base netta fissa (automatica)</span><b id="base-show">€ 0,00</b></div>
+        <div class="rates">
+          <div class="rate">Ora volo (HFA) <b>5,70 €</b></div>
+          <div class="rate">Ora da n.1 (CSS) <b>6,88 €</b></div>
+          <div class="rate">Festivo / Ferie <b>35,03 €</b></div>
+          <div class="rate">Nightstop <b>42,00 €</b></div>
+          <div class="rate">Diaria (volo/standby) <b>40,00 €</b></div>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="label">Come si compone</div>
-      <div class="pb-row"><span>Base fissa netta</span><b id="pb-base">€ 0,00</b></div>
-      <div class="pb-row"><span>Sector Pay (IVO: volo)</span><b id="pb-ivo">€ 0,00</b></div>
-      <div class="pb-row"><span>Diarie esentasse</span><b id="pb-fly">€ 0,00</b></div>
-      <div class="pb-row"><span>Altre voci tassabili (netto)</span><b id="pb-tax">€ 0,00</b></div>
+    <div class="card cal-card" id="rates-card">
+      <button class="cal-toggle"><span>⚙️ Tariffe (modificabili)</span><span class="chev">›</span></button>
+      <div class="cal-body">
+        <div class="field"><div class="fl"><div class="fn">€/ora volo (HFA)</div></div><input class="pinput" id="c-rhfa" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">€/ora da n.1 (CSS)</div></div><input class="pinput" id="c-rcss" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">€ festivo / ferie</div></div><input class="pinput" id="c-rfest" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">€ nightstop</div></div><input class="pinput" id="c-rnight" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">€/giorno diaria</div><div class="fd">volo e standby, stesso importo</div></div><input class="pinput" id="c-rdiaria" type="text" inputmode="decimal" /></div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="label">Tariffe (modificabili)</div>
-      <div class="field"><div class="fl"><div class="fn">€/ora volo (HFA)</div></div><input class="pinput" id="c-rhfa" type="text" inputmode="decimal" /></div>
-      <div class="field"><div class="fl"><div class="fn">€/ora da n.1 (CSS)</div></div><input class="pinput" id="c-rcss" type="text" inputmode="decimal" /></div>
-      <div class="field"><div class="fl"><div class="fn">€ festivo / ferie</div></div><input class="pinput" id="c-rfest" type="text" inputmode="decimal" /></div>
-      <div class="field"><div class="fl"><div class="fn">€ nightstop</div></div><input class="pinput" id="c-rnight" type="text" inputmode="decimal" /></div>
-      <div class="field"><div class="fl"><div class="fn">€/giorno diaria</div><div class="fd">volo e standby, stesso importo</div></div><input class="pinput" id="c-rdiaria" type="text" inputmode="decimal" /></div>
-    </div>
-
-    <button class="reset" id="prev-reset">Ripristina tariffe e azzera mese</button>
+    <button class="reset" id="prev-reset">↺ Azzera quantità del mese</button>
   </div>
 
 </div>
@@ -373,7 +378,13 @@
     if (!confirm('Nuovo mese: azzero le spese extra/variabili e tengo le spese fisse. Procedo?')) return;
     state.variable = []; view = new Date(); view.setDate(1); saveBudget(); renderCalendar(); render();
   };
-  $('cal-toggle').onclick = () => { const c = $('cal-card'); c.classList.toggle('open'); if (c.classList.contains('open')) { view = new Date(); view.setDate(1); renderCalendar(); } };
+  document.querySelectorAll('.cal-toggle').forEach(btn => {
+    btn.onclick = () => {
+      const card = btn.closest('.cal-card');
+      card.classList.toggle('open');
+      if (card.id === 'cal-card' && card.classList.contains('open')) { view = new Date(); view.setDate(1); renderCalendar(); }
+    };
+  });
   $('reset').onclick = () => { if (!confirm('Vuoi davvero azzerare stipendio e tutte le spese?')) return; state = { salary: 0, fixed: [], variable: [] }; try { localStorage.removeItem(KEY); } catch (e) {} $('salary').value = ''; render(); };
 
   /* ===== PREVISIONE ===== */
@@ -414,9 +425,9 @@
   for (const k in QF) $(QF[k]).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
   for (const k in CF) $(CF[k]).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
   $('prev-reset').onclick = () => {
-    if (!confirm('Ripristino tariffe e azzero le quantità del mese?')) return;
-    prev = Object.assign({}, PDEF); try { localStorage.removeItem(PKEY); } catch (e) {}
-    for (const k in QF) $(QF[k]).value = toField(prev[k]); for (const k in CF) $(CF[k]).value = toField(prev[k]); renderPrev();
+    if (!confirm('Azzero le quantità del mese? Le tariffe restano invariate.')) return;
+    for (const k in QF) { prev[k] = 0; $(QF[k]).value = ''; }
+    savePrev(); renderPrev();
   };
 
   /* ===== SCHEDE ===== */
