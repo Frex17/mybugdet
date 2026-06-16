@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Il mio budget</title>
-<!-- Comportamento da app sulla schermata Home iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,59 +13,52 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
-
   :root {
     --paper: #f4efe6; --card: #fbf8f1; --ink: #2b2622; --ink-soft: #6f655a;
     --line: #ddd3c2; --green: #2f6b4f; --clay: #b5503a; --clay-soft: #f3e0d8;
-    --gold: #b9852a; --gold-soft: #f1e6cf;
+    --gold: #b9852a; --gold-soft: #f1e6cf; --blue: #2f5a6b; --blue-soft: #dfeaee;
     --shadow: 0 1px 2px rgba(43,38,34,.06), 0 8px 24px rgba(43,38,34,.07);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { background: var(--paper); }
-  body {
-    font-family: 'DM Sans', -apple-system, system-ui, sans-serif;
-    background-image: radial-gradient(circle at 18% 0%, rgba(185,133,42,.08), transparent 38%),
-                      radial-gradient(circle at 90% 12%, rgba(47,107,79,.07), transparent 34%);
-    color: var(--ink); min-height: 100vh;
-  }
-  #app { padding: calc(22px + env(safe-area-inset-top)) 16px calc(80px + env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+  body { font-family: 'DM Sans', -apple-system, system-ui, sans-serif;
+    background-image: radial-gradient(circle at 18% 0%, rgba(185,133,42,.08), transparent 38%), radial-gradient(circle at 90% 12%, rgba(47,107,79,.07), transparent 34%);
+    color: var(--ink); min-height: 100vh; }
+  #app { padding: calc(22px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+  .page { display: none; }
+  .page.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   .top { margin: 6px 2px 22px; }
   .eyebrow { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; }
   h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 32px; line-height: 1.05; margin-top: 6px; letter-spacing: -.01em; }
   h1 em { font-style: italic; color: var(--green); }
+  h1.blue em { color: var(--blue); }
   .payday { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
   .payday b { color: var(--ink); font-weight: 700; }
-
+  .sub { margin-top: 10px; font-size: 13px; color: var(--ink-soft); line-height: 1.45; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 16px; }
   .label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; }
-
   .salary-row { display: flex; align-items: baseline; gap: 4px; }
   .salary-row .cur { font-family:'Fraunces',Georgia,serif; font-size: 26px; color: var(--ink-soft); }
   #salary { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 40px; border: none; background: transparent; color: var(--ink); width: 100%; outline: none; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
   #salary::placeholder { color: var(--line); }
-
   .add-form { display: flex; gap: 8px; margin-bottom: 14px; }
   .add-form input { font-family: 'DM Sans', sans-serif; font-size: 15px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 12px; padding: 12px 13px; outline: none; transition: border-color .15s; }
   .add-form input.name { flex: 1 1 auto; min-width: 0; }
   .add-form input.amt { width: 92px; text-align: right; font-variant-numeric: tabular-nums; }
   .add-btn { flex: 0 0 auto; border: none; color: #fff; width: 46px; border-radius: 12px; font-size: 24px; line-height: 1; cursor: pointer; transition: transform .1s; }
   .add-btn:active { transform: scale(.92); }
-  .add-fixed input:focus { border-color: var(--clay); }
-  .add-var input:focus { border-color: var(--gold); }
-  .add-fixed .add-btn { background: var(--clay); }
-  .add-var .add-btn { background: var(--gold); }
-
+  .add-fixed input:focus { border-color: var(--clay); } .add-var input:focus { border-color: var(--gold); }
+  .add-fixed .add-btn { background: var(--clay); } .add-var .add-btn { background: var(--gold); }
   ul.list { list-style: none; }
   ul.list li { display: flex; align-items: center; gap: 10px; padding: 13px 2px; border-bottom: 1px solid var(--line); animation: pop .25s ease; }
   ul.list li:last-child { border-bottom: none; }
   @keyframes pop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; } }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
-  .dot.fixed { background: var(--clay); }
-  .dot.var { background: var(--gold); }
+  .dot.fixed { background: var(--clay); } .dot.var { background: var(--gold); }
   .e-name { flex: 1 1 auto; font-size: 15.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .e-amount { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 15.5px; }
-  .e-amount.fixed { color: var(--clay); }
-  .e-amount.var { color: var(--gold); }
+  .e-amount.fixed { color: var(--clay); } .e-amount.var { color: var(--gold); }
   .del { border: none; background: transparent; color: var(--ink-soft); font-size: 17px; cursor: pointer; padding: 4px 6px; border-radius: 8px; line-height: 1; }
   .del:active { background: var(--paper); }
   .empty { color: var(--ink-soft); font-size: 14px; text-align: center; padding: 14px 0 6px; font-style: italic; }
@@ -74,31 +66,27 @@
   .tot span { font-size: 13px; text-transform: uppercase; letter-spacing:.1em; color: var(--ink-soft); font-weight: 700; }
   .tot b { font-family:'Fraunces',Georgia,serif; font-size: 22px; font-variant-numeric: tabular-nums; }
   .tot b.fixed { color: var(--clay); } .tot b.var { color: var(--gold); }
-
   .result { background: var(--green); color: #fff; border-radius: 20px; padding: 22px; box-shadow: 0 10px 30px rgba(47,107,79,.28); }
   .result.negative { background: var(--clay); box-shadow: 0 10px 30px rgba(181,80,58,.28); }
+  .result.blue { background: var(--blue); box-shadow: 0 10px 30px rgba(47,90,107,.28); }
   .result .r-label { font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; opacity: .8; font-weight: 700; }
   .result .r-amount { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 46px; line-height: 1; margin-top: 8px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-  .result .r-note { font-size: 13.5px; opacity: .92; margin-top: 12px; line-height: 1.45; }
+  .result .r-note { font-size: 13px; opacity: .92; margin-top: 12px; line-height: 1.45; }
   .bar { height: 7px; border-radius: 4px; background: rgba(255,255,255,.25); margin-top: 18px; overflow: hidden; }
   .bar > i { display: block; height: 100%; background: #fff; border-radius: 4px; transition: width .4s ease; }
   .breakdown { display: flex; justify-content: space-between; font-size: 12px; margin-top: 9px; opacity: .9; }
   .reset { display:block; margin: 26px auto 0; background: none; border: none; color: var(--ink-soft); font-size: 12.5px; text-decoration: underline; cursor: pointer; }
-
   .label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .newmonth { border: 1px solid var(--gold); background: var(--gold-soft); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 20px; cursor: pointer; transition: transform .1s; }
-  .newmonth:active { transform: scale(.94); }
-
+  .newmonth { border: 1px solid var(--gold); background: var(--gold-soft); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 20px; cursor: pointer; }
   .cal-card { padding: 0; overflow: hidden; }
   .cal-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; background: none; border: none; padding: 18px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; }
   .cal-toggle .chev { font-size: 22px; color: var(--ink-soft); transition: transform .25s ease; }
   .cal-card.open .cal-toggle .chev { transform: rotate(90deg); }
-  .cal-body { max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px; transition: max-height .3s ease, opacity .25s ease, padding .3s ease; }
-  .cal-card.open .cal-body { max-height: 520px; opacity: 1; padding: 0 18px 18px; }
+  .cal-body { max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px; transition: max-height .35s ease, opacity .25s ease, padding .35s ease; }
+  .cal-card.open .cal-body { max-height: 900px; opacity: 1; padding: 0 18px 18px; }
   .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .cal-head .m { font-family: 'Fraunces', Georgia, serif; font-size: 19px; font-weight: 600; text-transform: capitalize; }
   .nav { border: 1px solid var(--line); background: #fff; color: var(--ink); width: 34px; height: 34px; border-radius: 10px; font-size: 17px; cursor: pointer; }
-  .nav:active { background: var(--paper); }
   .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
   .dow { text-align: center; font-size: 11px; font-weight: 700; color: var(--ink-soft); padding-bottom: 4px; }
   .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 13.5px; font-variant-numeric: tabular-nums; border-radius: 9px; color: var(--ink); }
@@ -107,255 +95,339 @@
   .day.pay { background: var(--green); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(47,107,79,.35); }
   .cal-note { margin-top: 12px; font-size: 13px; color: var(--ink-soft); text-align: center; }
   .cal-note b { color: var(--green); }
+
+  /* Previsione: due colonne fisse */
+  .fixgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .fixcol h4 { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+  .fixcol.inc h4 { color: var(--green); } .fixcol.ded h4 { color: var(--clay); }
+  .frow { display: flex; justify-content: space-between; gap: 6px; font-size: 12.5px; padding: 4px 0; color: var(--ink-soft); }
+  .frow span:last-child { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .fsub { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 700; }
+  .fsub b { font-variant-numeric: tabular-nums; }
+  .rates { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .rate { background: var(--blue-soft); border-radius: 18px; padding: 6px 11px; font-size: 11.5px; color: var(--blue); font-weight: 600; }
+  .rate b { font-variant-numeric: tabular-nums; }
+
+  .field { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .field:last-child { border-bottom: none; }
+  .field .fl { flex: 1 1 auto; min-width: 0; }
+  .field .fl .fn { font-size: 14.5px; font-weight: 600; }
+  .field .fl .fd { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .field .fl .fd.tax { color: var(--clay); } .field .fl .fd.free { color: var(--green); }
+  .qty { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+  .qty .qv { font-size: 12.5px; color: var(--blue); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
+  .pinput { width: 70px; flex: 0 0 auto; font-family: 'DM Sans', sans-serif; font-size: 16px; text-align: right; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 10px; padding: 10px; outline: none; font-variant-numeric: tabular-nums; }
+  .pinput:focus { border-color: var(--blue); }
+  .pb-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 5px 0; color: var(--ink-soft); }
+  .pb-row b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
+  .pb-row.warn { color: var(--clay); }
+  .refs { display: flex; gap: 7px; flex-wrap: wrap; }
+  .chip { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 6px 11px; font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .chip b { color: var(--ink); }
+
+  .tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 460px; display: flex; background: rgba(251,248,241,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); z-index: 50; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 0; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; }
+  .tab .ti { font-size: 20px; line-height: 1; } .tab .tl { font-size: 11px; font-weight: 700; }
+  .tab.active { color: var(--green); } .tab.active.t-prev { color: var(--blue); }
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="top">
-    <div class="eyebrow">Bilancio mensile</div>
-    <h1>Il mio <em>budget</em></h1>
-    <div class="payday">Prossimo stipendio: <b id="next-pay">—</b> · <span id="countdown"></span></div>
-  </div>
 
-  <div class="card">
-    <div class="label">Stipendio del mese</div>
-    <div class="salary-row">
-      <span class="cur">€</span>
-      <input id="salary" type="text" inputmode="decimal" placeholder="0" />
+  <!-- ===== BUDGET ===== -->
+  <div class="page active" id="page-budget">
+    <div class="top">
+      <div class="eyebrow">Bilancio mensile</div>
+      <h1>Il mio <em>budget</em></h1>
+      <div class="payday">Prossimo stipendio: <b id="next-pay">—</b> · <span id="countdown"></span></div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="label">Spese fisse mensili</div>
-    <div class="add-form add-fixed">
-      <input class="name" id="fx-name" type="text" placeholder="Es. Affitto, Bollette…" />
-      <input class="amt" id="fx-amt" type="text" inputmode="decimal" placeholder="€" />
-      <button class="add-btn" id="fx-add">+</button>
+    <div class="card">
+      <div class="label">Stipendio del mese</div>
+      <div class="salary-row"><span class="cur">€</span><input id="salary" type="text" inputmode="decimal" placeholder="0" /></div>
     </div>
-    <ul class="list" id="fx-list"></ul>
-    <div class="tot"><span>Totale fisse</span><b class="fixed" id="fx-total">€ 0,00</b></div>
-  </div>
-
-  <div class="card">
-    <div class="label-row">
-      <div class="label" style="margin-bottom:0">Spese extra / variabili</div>
-      <button class="newmonth" id="newmonth">↺ Nuovo mese</button>
-    </div>
-    <div class="add-form add-var">
-      <input class="name" id="vr-name" type="text" placeholder="Es. Cena fuori, Regalo…" />
-      <input class="amt" id="vr-amt" type="text" inputmode="decimal" placeholder="€" />
-      <button class="add-btn" id="vr-add">+</button>
-    </div>
-    <ul class="list" id="vr-list"></ul>
-    <div class="tot"><span>Totale extra</span><b class="var" id="vr-total">€ 0,00</b></div>
-  </div>
-
-  <div class="result" id="result">
-    <div class="r-label">Ti rimane</div>
-    <div class="r-amount" id="remaining">€ 0,00</div>
-    <div class="r-note" id="note">Inserisci il tuo stipendio per iniziare.</div>
-    <div class="bar"><i id="bar-fill" style="width:0%"></i></div>
-    <div class="breakdown"><span id="bd-spent">Speso 0%</span><span id="bd-left">Rimane 0%</span></div>
-  </div>
-
-  <div class="card cal-card" id="cal-card">
-    <button class="cal-toggle" id="cal-toggle">
-      <span>📅 Calendario stipendio</span>
-      <span class="chev" id="chev">›</span>
-    </button>
-    <div class="cal-body" id="cal-body">
-      <div class="cal-head">
-        <button class="nav" id="prev">‹</button>
-        <div class="m" id="cal-month"></div>
-        <button class="nav" id="next">›</button>
+    <div class="card">
+      <div class="label">Spese fisse mensili</div>
+      <div class="add-form add-fixed">
+        <input class="name" id="fx-name" type="text" placeholder="Es. Affitto, Bollette…" />
+        <input class="amt" id="fx-amt" type="text" inputmode="decimal" placeholder="€" />
+        <button class="add-btn" id="fx-add">+</button>
       </div>
-      <div class="grid" id="cal-grid"></div>
-      <div class="cal-note" id="cal-note"></div>
+      <ul class="list" id="fx-list"></ul>
+      <div class="tot"><span>Totale fisse</span><b class="fixed" id="fx-total">€ 0,00</b></div>
     </div>
+    <div class="card">
+      <div class="label-row"><div class="label" style="margin-bottom:0">Spese extra / variabili</div><button class="newmonth" id="newmonth">↺ Nuovo mese</button></div>
+      <div class="add-form add-var">
+        <input class="name" id="vr-name" type="text" placeholder="Es. Cena fuori, Regalo…" />
+        <input class="amt" id="vr-amt" type="text" inputmode="decimal" placeholder="€" />
+        <button class="add-btn" id="vr-add">+</button>
+      </div>
+      <ul class="list" id="vr-list"></ul>
+      <div class="tot"><span>Totale extra</span><b class="var" id="vr-total">€ 0,00</b></div>
+    </div>
+    <div class="result" id="result">
+      <div class="r-label">Ti rimane</div>
+      <div class="r-amount" id="remaining">€ 0,00</div>
+      <div class="r-note" id="note">Inserisci il tuo stipendio per iniziare.</div>
+      <div class="bar"><i id="bar-fill" style="width:0%"></i></div>
+      <div class="breakdown"><span id="bd-spent">Speso 0%</span><span id="bd-left">Rimane 0%</span></div>
+    </div>
+    <div class="card cal-card" id="cal-card">
+      <button class="cal-toggle" id="cal-toggle"><span>📅 Calendario stipendio</span><span class="chev">›</span></button>
+      <div class="cal-body" id="cal-body">
+        <div class="cal-head"><button class="nav" id="prev">‹</button><div class="m" id="cal-month"></div><button class="nav" id="next">›</button></div>
+        <div class="grid" id="cal-grid"></div>
+        <div class="cal-note" id="cal-note"></div>
+      </div>
+    </div>
+    <button class="reset" id="reset">Azzera tutti i dati</button>
   </div>
 
-  <button class="reset" id="reset">Azzera tutti i dati</button>
+  <!-- ===== PREVISIONE ===== -->
+  <div class="page" id="page-prev">
+    <div class="top">
+      <div class="eyebrow">Stima busta paga</div>
+      <h1 class="blue">Previsione <em>stipendio</em></h1>
+      <div class="sub">Inserisci ore di volo e giornate del mese. Le tariffe sono quelle reali estratte dalla tua app Sector Pay. È una <b>stima</b> (±qualche decina di €).</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Parte fissa mensile</div>
+      <div class="fixgrid">
+        <div class="fixcol inc">
+          <h4>Entrate fisse</h4>
+          <div class="frow"><span>Stipendio base</span><span>307,69</span></div>
+          <div class="frow"><span>Ind. agg. volo</span><span>60,83</span></div>
+          <div class="frow"><span>IVMG</span><span>738,58</span></div>
+          <div class="fsub"><span>Totale</span><b>1.107,10</b></div>
+        </div>
+        <div class="fixcol ded">
+          <h4>Deduzioni fisse</h4>
+          <div class="frow"><span>Contributi INPS</span><span>204,18</span></div>
+          <div class="frow"><span>Sindacato</span><span>5,00</span></div>
+          <div class="frow"><span>Add. regionale</span><span>11,60</span></div>
+          <div class="frow"><span>Add. comunale</span><span>7,89</span></div>
+          <div class="fsub"><span>Totale</span><b>228,67</b></div>
+        </div>
+      </div>
+      <div class="fsub" style="margin-top:14px"><span>Base netta fissa (automatica)</span><b id="base-show">€ 0,00</b></div>
+      <div class="rates">
+        <div class="rate">Ora volo (HFA) <b>5,70 €</b></div>
+        <div class="rate">Ora da n.1 (CSS) <b>6,88 €</b></div>
+        <div class="rate">Festivo / Ferie <b>35,03 €</b></div>
+        <div class="rate">Nightstop <b>42,00 €</b></div>
+        <div class="rate">Diaria (volo/standby) <b>40,00 €</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="label">Volo e giornate del mese</div>
+      <div class="field">
+        <div class="fl"><div class="fn">Ore di volo (HFA)</div><div class="fd tax">× 5,70 €/h · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-hfa" type="text" inputmode="decimal" /><span class="qv" id="v-hfa">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Ore di volo da n.1 (CSS)</div><div class="fd tax">× 6,88 €/h · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-css" type="text" inputmode="decimal" /><span class="qv" id="v-css">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Nightstops</div><div class="fd tax">× 42,00 € · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-night" type="text" inputmode="numeric" /><span class="qv" id="v-night">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Giorni festivi (Bank Hol.)</div><div class="fd tax">× 35,03 € · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-bank" type="text" inputmode="numeric" /><span class="qv" id="v-bank">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Giorni di ferie</div><div class="fd tax">× 35,03 € · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-ferie" type="text" inputmode="numeric" /><span class="qv" id="v-ferie">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Giorni standby / airport duty</div><div class="fd tax">no-fly diaria · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-standby" type="text" inputmode="numeric" /><span class="qv" id="v-standby">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Giorni di volo (diaria)</div><div class="fd free">esentasse · arriva al 100%</div></div>
+        <div class="qty"><input class="pinput" id="q-fly" type="text" inputmode="numeric" /><span class="qv" id="v-fly">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Diarie extra notturne</div><div class="fd free">atterraggio dopo l1, fine blocco · esente</div></div>
+        <div class="qty"><input class="pinput" id="q-extra" type="text" inputmode="numeric" /><span class="qv" id="v-extra">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Commissione vendita</div><div class="fd tax">€ diretti · tassabile</div></div>
+        <div class="qty"><input class="pinput" id="q-comm" type="text" inputmode="decimal" /><span class="qv" id="v-comm">€ 0</span></div>
+      </div>
+    </div>
+
+    <div class="result blue" id="prev-result">
+      <div class="r-label">Netto stimato</div>
+      <div class="r-amount" id="prev-net">€ 0,00</div>
+      <div class="r-note" id="prev-note"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Come si compone</div>
+      <div class="pb-row"><span>Base fissa netta</span><b id="pb-base">€ 0,00</b></div>
+      <div class="pb-row"><span>Sector Pay (IVO: volo)</span><b id="pb-ivo">€ 0,00</b></div>
+      <div class="pb-row"><span>Diarie esentasse</span><b id="pb-fly">€ 0,00</b></div>
+      <div class="pb-row"><span>Altre voci tassabili (netto)</span><b id="pb-tax">€ 0,00</b></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Tariffe (modificabili)</div>
+      <div class="field"><div class="fl"><div class="fn">€/ora volo (HFA)</div></div><input class="pinput" id="c-rhfa" type="text" inputmode="decimal" /></div>
+      <div class="field"><div class="fl"><div class="fn">€/ora da n.1 (CSS)</div></div><input class="pinput" id="c-rcss" type="text" inputmode="decimal" /></div>
+      <div class="field"><div class="fl"><div class="fn">€ festivo / ferie</div></div><input class="pinput" id="c-rfest" type="text" inputmode="decimal" /></div>
+      <div class="field"><div class="fl"><div class="fn">€ nightstop</div></div><input class="pinput" id="c-rnight" type="text" inputmode="decimal" /></div>
+      <div class="field"><div class="fl"><div class="fn">€/giorno diaria</div><div class="fd">volo e standby, stesso importo</div></div><input class="pinput" id="c-rdiaria" type="text" inputmode="decimal" /></div>
+    </div>
+
+    <button class="reset" id="prev-reset">Ripristina tariffe e azzera mese</button>
+  </div>
+
+</div>
+
+<div class="tabbar">
+  <button class="tab active" id="tab-budget" data-page="budget"><span class="ti">💶</span><span class="tl">Budget</span></button>
+  <button class="tab t-prev" id="tab-prev" data-page="prev"><span class="ti">📊</span><span class="tl">Previsione</span></button>
 </div>
 
 <script>
   const fmt = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+  const fmt0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
   const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  const $ = id => document.getElementById(id);
+  function parseNum(v) { if (v == null) return NaN; const n = parseFloat(String(v).trim().replace(/\s/g,'').replace(',', '.')); return isNaN(n) ? NaN : n; }
+  function toField(n) { return (n || n === 0) ? String(n).replace('.', ',') : ''; }
+
+  /* ===== BUDGET ===== */
   const KEY = 'budget:data';
   let state = { salary: 0, fixed: [], variable: [] };
   let view = new Date(); view.setDate(1);
-
-  const $ = id => document.getElementById(id);
-
-  // Legge un numero accettando sia la virgola che il punto (es. "1500,50")
-  function parseNum(v) {
-    if (v == null) return NaN;
-    const n = parseFloat(String(v).trim().replace(/\s/g, '').replace(',', '.'));
-    return isNaN(n) ? NaN : n;
+  function payday(y, m) { const d = new Date(y, m, 28); const w = d.getDay(); if (w === 6) d.setDate(27); else if (w === 0) d.setDate(26); return d; }
+  function nextPayday() { const now = new Date(); let p = payday(now.getFullYear(), now.getMonth()); if (now.setHours(0,0,0,0) > p.getTime()) p = payday(now.getFullYear(), now.getMonth() + 1); return p; }
+  function loadBudget() {
+    try { const raw = localStorage.getItem(KEY); if (raw) { const s = JSON.parse(raw); state = { salary: s.salary || 0, fixed: s.fixed || s.expenses || [], variable: s.variable || [] }; } } catch (e) {}
+    $('salary').value = toField(state.salary); renderCalendar(); render();
   }
-  // Mostra un numero con la virgola nei campi di testo
-  function toField(n) { return n ? String(n).replace('.', ',') : ''; }
-
-  // Giorno di paga: il 28, ma se sabato -> ven 27, se domenica -> ven 26
-  function payday(year, month) {
-    const d = new Date(year, month, 28);
-    const dow = d.getDay();
-    if (dow === 6) d.setDate(27);
-    else if (dow === 0) d.setDate(26);
-    return d;
-  }
-  function nextPayday() {
-    const now = new Date();
-    let p = payday(now.getFullYear(), now.getMonth());
-    if (now.setHours(0,0,0,0) > p.getTime()) p = payday(now.getFullYear(), now.getMonth() + 1);
-    return p;
-  }
-
-  // --- Salvataggio nella memoria del telefono (localStorage) ---
-  function load() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const s = JSON.parse(raw);
-        state = { salary: s.salary || 0, fixed: s.fixed || s.expenses || [], variable: s.variable || [] };
-      }
-    } catch (e) {}
-    $('salary').value = toField(state.salary);
-    renderCalendar(); render();
-  }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { console.error(e); }
-  }
-
-  function makeAdder(listKey, nameId, amtId) {
-    return function () {
-      const name = $(nameId).value.trim();
-      const amount = parseNum($(amtId).value);
-      if (!name || isNaN(amount) || amount <= 0) return;
-      state[listKey].push({ id: Date.now(), name, amount });
-      $(nameId).value = ''; $(amtId).value = ''; $(nameId).focus();
-      save(); render();
-    };
-  }
-  function removeItem(listKey, id) { state[listKey] = state[listKey].filter(e => e.id !== id); save(); render(); }
-
+  function saveBudget() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function makeAdder(listKey, nameId, amtId) { return function () {
+    const name = $(nameId).value.trim(); const amount = parseNum($(amtId).value);
+    if (!name || isNaN(amount) || amount <= 0) return;
+    state[listKey].push({ id: Date.now(), name, amount }); $(nameId).value = ''; $(amtId).value = ''; $(nameId).focus(); saveBudget(); render();
+  }; }
+  function removeItem(listKey, id) { state[listKey] = state[listKey].filter(e => e.id !== id); saveBudget(); render(); }
   function renderList(listKey, ulId, cls, totId) {
-    const ul = $(ulId); ul.innerHTML = '';
-    const arr = state[listKey];
-    if (arr.length === 0) {
-      ul.innerHTML = '<div class="empty">Nessuna voce ancora.</div>';
-    } else {
-      arr.forEach(e => {
-        const li = document.createElement('li');
-        li.innerHTML = '<span class="dot ' + cls + '"></span><span class="e-name"></span>' +
-          '<span class="e-amount ' + cls + '"></span><button class="del">✕</button>';
-        li.querySelector('.e-name').textContent = e.name;
-        li.querySelector('.e-amount').textContent = fmt.format(e.amount);
-        li.querySelector('.del').onclick = () => removeItem(listKey, e.id);
-        ul.appendChild(li);
-      });
-    }
-    const tot = arr.reduce((s, e) => s + e.amount, 0);
-    $(totId).textContent = fmt.format(tot);
-    return tot;
+    const ul = $(ulId); ul.innerHTML = ''; const arr = state[listKey];
+    if (arr.length === 0) { ul.innerHTML = '<div class="empty">Nessuna voce ancora.</div>'; }
+    else { arr.forEach(e => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="dot ' + cls + '"></span><span class="e-name"></span><span class="e-amount ' + cls + '"></span><button class="del">✕</button>';
+      li.querySelector('.e-name').textContent = e.name; li.querySelector('.e-amount').textContent = fmt.format(e.amount);
+      li.querySelector('.del').onclick = () => removeItem(listKey, e.id); ul.appendChild(li);
+    }); }
+    const tot = arr.reduce((s, e) => s + e.amount, 0); $(totId).textContent = fmt.format(tot); return tot;
   }
-
   function renderCalendar() {
-    const y = view.getFullYear(), m = view.getMonth();
-    $('cal-month').textContent = MESI[m] + ' ' + y;
-    const pay = payday(y, m);
-    const today = new Date(); today.setHours(0,0,0,0);
-
-    const grid = $('cal-grid');
-    grid.innerHTML = '';
-    ['L','M','M','G','V','S','D'].forEach(d => {
-      const el = document.createElement('div'); el.className = 'dow'; el.textContent = d; grid.appendChild(el);
-    });
-    const first = new Date(y, m, 1);
-    const offset = (first.getDay() + 6) % 7;
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const prevDays = new Date(y, m, 0).getDate();
-
+    const y = view.getFullYear(), m = view.getMonth(); $('cal-month').textContent = MESI[m] + ' ' + y;
+    const pay = payday(y, m); const today = new Date(); today.setHours(0,0,0,0);
+    const grid = $('cal-grid'); grid.innerHTML = '';
+    ['L','M','M','G','V','S','D'].forEach(d => { const el = document.createElement('div'); el.className = 'dow'; el.textContent = d; grid.appendChild(el); });
+    const offset = (new Date(y, m, 1).getDay() + 6) % 7; const dim = new Date(y, m + 1, 0).getDate(); const pdim = new Date(y, m, 0).getDate();
     for (let i = 0; i < 42; i++) {
-      const cell = document.createElement('div');
-      cell.className = 'day';
-      const dayNum = i - offset + 1;
-      if (dayNum < 1) { cell.classList.add('out'); cell.textContent = prevDays + dayNum; }
-      else if (dayNum > daysInMonth) { cell.classList.add('out'); cell.textContent = dayNum - daysInMonth; }
-      else {
-        cell.textContent = dayNum;
-        const cur = new Date(y, m, dayNum);
-        if (dayNum === pay.getDate()) cell.classList.add('pay');
-        if (cur.getTime() === today.getTime()) cell.classList.add('today');
-      }
+      const cell = document.createElement('div'); cell.className = 'day'; const dn = i - offset + 1;
+      if (dn < 1) { cell.classList.add('out'); cell.textContent = pdim + dn; }
+      else if (dn > dim) { cell.classList.add('out'); cell.textContent = dn - dim; }
+      else { cell.textContent = dn; const cur = new Date(y, m, dn);
+        if (dn === pay.getDate()) cell.classList.add('pay'); if (cur.getTime() === today.getTime()) cell.classList.add('today'); }
       grid.appendChild(cell);
     }
-
     const wd = ['domenica','lunedì','martedì','mercoledì','giovedì','venerdì','sabato'][pay.getDay()];
-    $('cal-note').innerHTML = 'Stipendio di ' + MESI[m].toLowerCase() + ': <b>' + wd + ' ' + pay.getDate() + '</b>' +
-      (pay.getDate() !== 28 ? ' — anticipato perché il 28 cade nel weekend' : '');
+    $('cal-note').innerHTML = 'Stipendio di ' + MESI[m].toLowerCase() + ': <b>' + wd + ' ' + pay.getDate() + '</b>' + (pay.getDate() !== 28 ? ' — anticipato perché il 28 cade nel weekend' : '');
   }
-
   function render() {
-    const totFx = renderList('fixed', 'fx-list', 'fixed', 'fx-total');
-    const totVr = renderList('variable', 'vr-list', 'var', 'vr-total');
-
-    const salary = state.salary || 0;
-    const spent = totFx + totVr;
-    const remaining = salary - spent;
-
-    $('remaining').textContent = fmt.format(remaining);
-    $('result').classList.toggle('negative', remaining < 0);
-
-    const np = nextPayday();
-    $('next-pay').textContent = np.getDate() + ' ' + MESI[np.getMonth()].toLowerCase();
+    const totFx = renderList('fixed', 'fx-list', 'fixed', 'fx-total'); const totVr = renderList('variable', 'vr-list', 'var', 'vr-total');
+    const salary = state.salary || 0; const spent = totFx + totVr; const remaining = salary - spent;
+    $('remaining').textContent = fmt.format(remaining); $('result').classList.toggle('negative', remaining < 0);
+    const np = nextPayday(); $('next-pay').textContent = np.getDate() + ' ' + MESI[np.getMonth()].toLowerCase();
     const days = Math.ceil((np - new Date().setHours(0,0,0,0)) / 86400000);
     $('countdown').textContent = days <= 0 ? 'oggi! 🎉' : (days === 1 ? 'tra 1 giorno' : 'tra ' + days + ' giorni');
-
     const note = $('note');
     if (salary === 0) note.textContent = 'Inserisci il tuo stipendio per iniziare.';
     else if (remaining < 0) note.textContent = 'Attenzione: le spese superano lo stipendio di ' + fmt.format(Math.abs(remaining)) + '.';
-    else note.textContent = 'Dopo fisse ed extra hai ' + fmt.format(remaining) + ' a disposizione — circa ' +
-      fmt.format(remaining / Math.max(1, days)) + ' al giorno fino al prossimo stipendio.';
-
+    else note.textContent = 'Dopo fisse ed extra hai ' + fmt.format(remaining) + ' a disposizione — circa ' + fmt.format(remaining / Math.max(1, days)) + ' al giorno fino al prossimo stipendio.';
     const pct = salary > 0 ? Math.min(100, Math.round(spent / salary * 100)) : 0;
-    $('bar-fill').style.width = pct + '%';
-    $('bd-spent').textContent = 'Speso ' + pct + '%';
-    $('bd-left').textContent = 'Rimane ' + Math.max(0, 100 - pct) + '%';
+    $('bar-fill').style.width = pct + '%'; $('bd-spent').textContent = 'Speso ' + pct + '%'; $('bd-left').textContent = 'Rimane ' + Math.max(0, 100 - pct) + '%';
   }
-
-  $('salary').addEventListener('input', e => { const n = parseNum(e.target.value); state.salary = isNaN(n) ? 0 : n; save(); render(); });
-  $('fx-add').onclick = makeAdder('fixed', 'fx-name', 'fx-amt');
-  $('vr-add').onclick = makeAdder('variable', 'vr-name', 'vr-amt');
+  $('salary').addEventListener('input', e => { const n = parseNum(e.target.value); state.salary = isNaN(n) ? 0 : n; saveBudget(); render(); });
+  $('fx-add').onclick = makeAdder('fixed', 'fx-name', 'fx-amt'); $('vr-add').onclick = makeAdder('variable', 'vr-name', 'vr-amt');
   $('fx-amt').addEventListener('keydown', e => { if (e.key === 'Enter') $('fx-add').click(); });
   $('vr-amt').addEventListener('keydown', e => { if (e.key === 'Enter') $('vr-add').click(); });
   $('fx-name').addEventListener('keydown', e => { if (e.key === 'Enter') $('fx-amt').focus(); });
   $('vr-name').addEventListener('keydown', e => { if (e.key === 'Enter') $('vr-amt').focus(); });
   $('prev').onclick = () => { view.setMonth(view.getMonth() - 1); renderCalendar(); };
   $('next').onclick = () => { view.setMonth(view.getMonth() + 1); renderCalendar(); };
-
   $('newmonth').onclick = () => {
     if (state.variable.length === 0) { alert('Non ci sono spese extra da azzerare.'); return; }
     if (!confirm('Nuovo mese: azzero le spese extra/variabili e tengo le spese fisse. Procedo?')) return;
-    state.variable = [];
-    view = new Date(); view.setDate(1);
-    save(); renderCalendar(); render();
+    state.variable = []; view = new Date(); view.setDate(1); saveBudget(); renderCalendar(); render();
+  };
+  $('cal-toggle').onclick = () => { const c = $('cal-card'); c.classList.toggle('open'); if (c.classList.contains('open')) { view = new Date(); view.setDate(1); renderCalendar(); } };
+  $('reset').onclick = () => { if (!confirm('Vuoi davvero azzerare stipendio e tutte le spese?')) return; state = { salary: 0, fixed: [], variable: [] }; try { localStorage.removeItem(KEY); } catch (e) {} $('salary').value = ''; render(); };
+
+  /* ===== PREVISIONE ===== */
+  const PKEY = 'budget:prev4';
+  const BASE = 1098;   // base netta fissa, calibrata sulle buste (senza recupero IRPEF e recupero 100€)
+  const IRPEF = 23;    // primo scaglione, fisso per il tuo reddito
+  const PDEF = { hfa: 24, css: 6, night: 1, bank: 0, ferie: 0, standby: 6, fly: 7, extra: 0, comm: 18,
+                 rhfa: 5.70, rcss: 6.88, rfest: 35.03, rnight: 42.00, rdiaria: 40 };
+  let prev = Object.assign({}, PDEF);
+  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', comm:'q-comm' };
+  const CF = { rhfa:'c-rhfa', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria' };
+
+  function loadPrev() {
+    try { const raw = localStorage.getItem(PKEY); if (raw) prev = Object.assign({}, PDEF, JSON.parse(raw)); } catch (e) {}
+    for (const k in QF) $(QF[k]).value = toField(prev[k]);
+    for (const k in CF) $(CF[k]).value = toField(prev[k]);
+    renderPrev();
+  }
+  function savePrev() { try { localStorage.setItem(PKEY, JSON.stringify(prev)); } catch (e) {} }
+  function renderPrev() {
+    const g = prev;
+    const eHfa = g.hfa * g.rhfa, eCss = g.css * g.rcss, eNight = g.night * g.rnight, eBank = g.bank * g.rfest,
+          eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra = g.extra * g.rdiaria, eComm = g.comm;
+    $('v-hfa').textContent = fmt0.format(eHfa); $('v-css').textContent = fmt0.format(eCss); $('v-night').textContent = fmt0.format(eNight);
+    $('v-bank').textContent = fmt0.format(eBank); $('v-ferie').textContent = fmt0.format(eFerie); $('v-standby').textContent = fmt0.format(eStandby);
+    $('v-fly').textContent = fmt0.format(eFly); $('v-extra').textContent = fmt0.format(eExtra); $('v-comm').textContent = fmt0.format(eComm);
+    const ivo = eHfa + eCss;
+    const taxableGross = ivo + eNight + eBank + eFerie + eStandby + eComm;
+    const taxfree = eFly + eExtra;
+    const taxableNet = taxableGross * (1 - IRPEF / 100);
+    const net = BASE + taxfree + taxableNet;
+    $('base-show').textContent = fmt.format(BASE);
+    $('prev-net').textContent = fmt.format(net);
+    $('pb-base').textContent = fmt.format(BASE); $('pb-ivo').textContent = fmt.format(ivo * (1 - IRPEF / 100));
+    $('pb-fly').textContent = fmt.format(taxfree); $('pb-tax').textContent = fmt.format((taxableGross - ivo) * (1 - IRPEF / 100));
+    $('prev-note').textContent = 'Volo: ' + (g.hfa + g.css) + ' h (IVO ' + fmt0.format(ivo) + ' lordi). Voci tassabili lorde ' + fmt0.format(taxableGross) + '. Stima indicativa.';
+  }
+  for (const k in QF) $(QF[k]).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
+  for (const k in CF) $(CF[k]).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
+  $('prev-reset').onclick = () => {
+    if (!confirm('Ripristino tariffe e azzero le quantità del mese?')) return;
+    prev = Object.assign({}, PDEF); try { localStorage.removeItem(PKEY); } catch (e) {}
+    for (const k in QF) $(QF[k]).value = toField(prev[k]); for (const k in CF) $(CF[k]).value = toField(prev[k]); renderPrev();
   };
 
-  $('cal-toggle').onclick = () => {
-    const card = $('cal-card');
-    card.classList.toggle('open');
-    if (card.classList.contains('open')) { view = new Date(); view.setDate(1); renderCalendar(); }
-  };
+  /* ===== SCHEDE ===== */
+  document.querySelectorAll('.tab').forEach(t => { t.onclick = () => {
+    const p = t.dataset.page;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+    t.classList.add('active'); $('page-' + p).classList.add('active'); window.scrollTo(0, 0);
+  }; });
 
-  $('reset').onclick = () => {
-    if (!confirm('Vuoi davvero azzerare stipendio e tutte le spese?')) return;
-    state = { salary: 0, fixed: [], variable: [] };
-    try { localStorage.removeItem(KEY); } catch (e) {}
-    $('salary').value = '';
-    render();
-  };
-
-  load();
+  loadBudget(); loadPrev();
 </script>
 </body>
 </html>
