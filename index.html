@@ -128,7 +128,29 @@
   .tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 460px; display: flex; background: rgba(251,248,241,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); z-index: 50; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 0; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; }
   .tab .ti { font-size: 20px; line-height: 1; } .tab .tl { font-size: 11px; font-weight: 700; }
-  .tab.active { color: var(--green); } .tab.active.t-prev { color: var(--blue); }
+  .tab.active { color: var(--green); } .tab.active.t-prev { color: var(--blue); } .tab.active.t-deb { color: var(--clay); }
+
+  .result.deb { background: var(--clay); box-shadow: 0 10px 30px rgba(181,80,58,.28); }
+  h1.clay em { color: var(--clay); }
+  .gh { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; margin: 4px 4px 8px; }
+  .debt { display: flex; align-items: center; gap: 10px; padding: 13px 2px; border-bottom: 1px solid var(--line); }
+  .debt:last-child { border-bottom: none; }
+  .debt-main { flex: 1 1 auto; min-width: 0; }
+  .debt-name { font-size: 15px; font-weight: 600; }
+  .debt-name.done { text-decoration: line-through; color: var(--ink-soft); }
+  .debt-meta { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .debt-right { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
+  .debt-res { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 14.5px; color: var(--clay); min-width: 62px; text-align: right; }
+  .dbtn { border: 1px solid var(--line); background: #fff; border-radius: 9px; padding: 7px 8px; font-size: 12px; font-weight: 700; cursor: pointer; line-height: 1; color: var(--ink-soft); }
+  .dbtn.pay { color: var(--green); }
+  .dbtn:active { background: var(--paper); }
+  .deb-fields { display: flex; gap: 7px; }
+  .dinput { font-family: 'DM Sans', sans-serif; font-size: 14px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 10px; padding: 11px 10px; outline: none; min-width: 0; }
+  .dinput:focus { border-color: var(--clay); }
+  .deb-fields .r { flex: 1 1 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .deb-fields .d { width: 56px; text-align: right; }
+  .deb-fields .n { width: 52px; text-align: right; }
+  .deb-fields select.dinput { flex: 1 1 0; }
 </style>
 </head>
 <body>
@@ -291,11 +313,54 @@
     <button class="reset" id="prev-reset">↺ Azzera quantità del mese</button>
   </div>
 
+  <!-- ===== DEBITI ===== -->
+  <div class="page" id="page-deb">
+    <div class="top">
+      <div class="eyebrow">Debiti e rate</div>
+      <h1 class="clay">I miei <em>debiti</em></h1>
+    </div>
+
+    <div class="result deb" id="deb-result">
+      <div class="r-label">Debito residuo totale</div>
+      <div class="r-amount" id="deb-total">€ 0,00</div>
+      <div class="r-note" id="deb-note"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Amex (carta · variabile)</div>
+      <div class="field">
+        <div class="fl"><div class="fn">Importo da pagare</div><div class="fd">si azzera il 21, paghi il 29</div></div>
+        <input class="pinput" id="amex-amt" type="text" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Giorno di pagamento</div></div>
+        <input class="pinput" id="amex-day" type="text" inputmode="numeric" />
+      </div>
+    </div>
+
+    <div id="deb-groups"></div>
+
+    <div class="card">
+      <div class="label">Aggiungi un debito a rate</div>
+      <div class="add-form" style="margin-bottom:8px">
+        <input class="name dinput" id="d-name" type="text" placeholder="Nome (es. Netflix, prestito…)" style="flex:1 1 auto" />
+      </div>
+      <div class="deb-fields">
+        <input class="dinput r" id="d-rata" type="text" inputmode="decimal" placeholder="Rata €" />
+        <input class="dinput d" id="d-day" type="text" inputmode="numeric" placeholder="Gg" />
+        <input class="dinput n" id="d-rem" type="text" inputmode="numeric" placeholder="Rate" />
+        <select class="dinput" id="d-group"><option>Prestiti</option><option selected>PayPal</option><option>Revolut</option><option>Altro</option></select>
+        <button class="add-btn" id="d-add" style="background:var(--clay)">+</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="tabbar">
   <button class="tab active" id="tab-budget" data-page="budget"><span class="ti">💶</span><span class="tl">Budget</span></button>
   <button class="tab t-prev" id="tab-prev" data-page="prev"><span class="ti">📊</span><span class="tl">Previsione</span></button>
+  <button class="tab t-deb" id="tab-deb" data-page="deb"><span class="ti">💳</span><span class="tl">Debiti</span></button>
 </div>
 
 <script>
@@ -438,7 +503,107 @@
     t.classList.add('active'); $('page-' + p).classList.add('active'); window.scrollTo(0, 0);
   }; });
 
-  loadBudget(); loadPrev();
+  /* ===== DEBITI ===== */
+  const DKEY = 'budget:debts';
+  const SEED_ASOF = '2026-06-17'; // data a cui i numeri qui sotto sono corretti
+  function isoOf(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function parseISO(s) { const p = String(s).split('-'); return new Date(+p[0], (+p[1]) - 1, +p[2]); }
+  // quante scadenze (giorno 'day' del mese) cadono dopo 'from' e fino a 'to' incluso
+  function countDue(day, from, to) {
+    let c = 0, y = from.getFullYear(), m = from.getMonth();
+    for (let i = 0; i < 600; i++) {
+      const dim = new Date(y, m + 1, 0).getDate();
+      const d = new Date(y, m, Math.min(day, dim));
+      if (d > to) break;
+      if (d > from) c++;
+      m++; if (m > 11) { m = 0; y++; }
+    }
+    return c;
+  }
+  const DEBT_SEED = [
+    { id: 1, name: 'Prestito ING', group: 'Prestiti', rata: 262.73, day: 1, remaining: 38 },
+    { id: 2, name: 'Prestito Cofidis', group: 'Prestiti', rata: 132.90, day: 1, remaining: 42 },
+    { id: 3, name: 'Credito Cofidis', group: 'Prestiti', rata: 122.83, day: 1, remaining: 7 },
+    { id: 4, name: 'Columbia Sportswear', group: 'PayPal', rata: 38.12, day: 10, remaining: 8 },
+    { id: 5, name: 'Philips Hue', group: 'PayPal', rata: 79.80, day: 12, remaining: 6 },
+    { id: 6, name: 'Olivia Rodrigo (1/4)', group: 'PayPal', rata: 27.36, day: 5, remaining: 5 },
+    { id: 7, name: 'Discoteca Laziale', group: 'PayPal', rata: 26.60, day: 29, remaining: 2 },
+    { id: 8, name: 'Amica Farmacia', group: 'PayPal', rata: 26.83, day: 20, remaining: 2 },
+    { id: 9, name: 'Martina - Shakira', group: 'Revolut', rata: 60.83, day: 2, remaining: 1 },
+    { id: 10, name: 'Angela - Gracie Abrams', group: 'Revolut', rata: 28.16, day: 2, remaining: 2 },
+    { id: 11, name: 'Angela - Paul Kalkbrenner', group: 'Revolut', rata: 34.50, day: 2, remaining: 1 }
+  ];
+  let debts = { items: DEBT_SEED.map(x => Object.assign({ checked: SEED_ASOF }, x)), amex: { amount: 344, day: 29 }, nextId: 12 };
+
+  function autoSettle() {
+    const today = new Date(); today.setHours(0, 0, 0, 0); const tIso = isoOf(today);
+    let changed = false;
+    debts.items.forEach(it => {
+      if (!it.checked) it.checked = SEED_ASOF;            // dato vecchio senza ancora -> ancora alla data dei numeri
+      const from = parseISO(it.checked);
+      if (it.remaining > 0) {
+        const due = countDue(it.day, from, today);
+        if (due > 0) { it.remaining = Math.max(0, it.remaining - due); changed = true; }
+      }
+      if (it.checked !== tIso) { it.checked = tIso; changed = true; }
+    });
+    if (changed) saveDebts();
+  }
+
+  function loadDebts() {
+    try { const raw = localStorage.getItem(DKEY); if (raw) { const d = JSON.parse(raw); debts = { items: d.items || [], amex: d.amex || { amount: 0, day: 29 }, nextId: d.nextId || 100 }; } } catch (e) {}
+    autoSettle();
+    $('amex-amt').value = toField(debts.amex.amount); $('amex-day').value = toField(debts.amex.day);
+    renderDebts();
+  }
+  function saveDebts() { try { localStorage.setItem(DKEY, JSON.stringify(debts)); } catch (e) {} }
+  function endLabel(day, remaining) {
+    if (remaining <= 0) return 'estinto';
+    const now = new Date(); let m = now.getMonth(), y = now.getFullYear();
+    if (now.getDate() > day) m++;
+    m += (remaining - 1);
+    const d = new Date(y, m, 1);
+    return MESI[d.getMonth()].toLowerCase().slice(0, 3) + ' ' + d.getFullYear();
+  }
+  function renderDebts() {
+    const groups = {}; debts.items.forEach(it => { (groups[it.group] = groups[it.group] || []).push(it); });
+    const order = ['Prestiti', 'PayPal', 'Revolut', 'Altro'];
+    const cont = $('deb-groups'); cont.innerHTML = '';
+    let totRes = 0, totRata = 0;
+    order.forEach(g => {
+      if (!groups[g]) return;
+      const h = document.createElement('div'); h.className = 'gh'; h.textContent = g; cont.appendChild(h);
+      const card = document.createElement('div'); card.className = 'card';
+      groups[g].forEach(it => {
+        const res = it.rata * it.remaining; totRes += res; if (it.remaining > 0) totRata += it.rata;
+        const done = it.remaining <= 0;
+        const li = document.createElement('div'); li.className = 'debt';
+        li.innerHTML = '<div class="debt-main"><div class="debt-name' + (done ? ' done' : '') + '"></div><div class="debt-meta"></div></div>' +
+          '<div class="debt-right"><div class="debt-res"></div><button class="dbtn pay">−1</button><button class="dbtn del">✕</button></div>';
+        li.querySelector('.debt-name').textContent = it.name;
+        li.querySelector('.debt-meta').textContent = fmt.format(it.rata) + ' · giorno ' + it.day + ' · ' + it.remaining + ' rate · fine ' + endLabel(it.day, it.remaining);
+        li.querySelector('.debt-res').textContent = fmt.format(res);
+        li.querySelector('.pay').onclick = () => { if (it.remaining > 0) { it.remaining--; saveDebts(); renderDebts(); } };
+        li.querySelector('.del').onclick = () => { if (confirm('Elimino "' + it.name + '"?')) { debts.items = debts.items.filter(x => x.id !== it.id); saveDebts(); renderDebts(); } };
+        card.appendChild(li);
+      });
+      cont.appendChild(card);
+    });
+    const amex = debts.amex.amount || 0; totRes += amex; totRata += amex;
+    $('deb-total').textContent = fmt.format(totRes);
+    $('deb-note').textContent = 'Da pagare questo mese: ' + fmt.format(totRata) + ' (rate + Amex).';
+  }
+  $('amex-amt').addEventListener('input', e => { const n = parseNum(e.target.value); debts.amex.amount = isNaN(n) ? 0 : n; saveDebts(); renderDebts(); });
+  $('amex-day').addEventListener('input', e => { const n = parseNum(e.target.value); debts.amex.day = isNaN(n) ? 29 : n; saveDebts(); });
+  $('d-add').onclick = () => {
+    const name = $('d-name').value.trim(); const rata = parseNum($('d-rata').value); const day = parseNum($('d-day').value); const rem = parseNum($('d-rem').value); const group = $('d-group').value;
+    if (!name || isNaN(rata) || rata <= 0 || isNaN(rem) || rem <= 0) return;
+    debts.items.push({ id: debts.nextId++, name, group, rata, day: isNaN(day) ? 1 : Math.round(day), remaining: Math.round(rem), checked: isoOf(new Date()) });
+    $('d-name').value = ''; $('d-rata').value = ''; $('d-day').value = ''; $('d-rem').value = '';
+    saveDebts(); renderDebts();
+  };
+
+  loadBudget(); loadPrev(); loadDebts();
 </script>
 </body>
 </html>
