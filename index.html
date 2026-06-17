@@ -118,6 +118,28 @@
   .qty .qv { font-size: 12.5px; color: var(--blue); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
   .pinput { width: 70px; flex: 0 0 auto; font-family: 'DM Sans', sans-serif; font-size: 16px; text-align: right; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 10px; padding: 10px; outline: none; font-variant-numeric: tabular-nums; }
   .pinput:focus { border-color: var(--blue); }
+  .ranksel { display: flex; gap: 6px; margin: 0 0 16px; }
+  .rankbtn { flex: 1; padding: 11px 4px; border: 1px solid var(--line); border-radius: 14px; background: #fff; font-family: 'DM Sans', sans-serif; font-weight: 800; color: var(--ink-soft); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 15px; transition: all .18s; }
+  .rankbtn small { font-weight: 600; font-size: 9.5px; opacity: .75; letter-spacing: .02em; }
+  .rankbtn:active { transform: scale(.96); }
+  .rankbtn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .rankbtn.active small { opacity: .9; }
+  .fxsec { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); margin: 12px 0 4px; }
+  .fxsec.inc { color: var(--green); } .fxsec.ded { color: var(--clay); }
+  .fxrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .fxrow:last-of-type { border-bottom: none; }
+  .fxl { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .fxl small { font-weight: 600; color: var(--ink-soft); }
+  .fxeq { display: block; font-size: 10.5px; color: var(--ink-soft); margin-top: 2px; line-height: 1.35; }
+  .fxrow b { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+  .fxchk { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+  .fxchk input { width: 18px; height: 18px; accent-color: var(--blue); flex: 0 0 auto; }
+  .slist { list-style: none; margin: 6px 0 0; padding: 0; }
+  .slist li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .slist .s-day { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--blue); background: #eef3f4; border-radius: 8px; padding: 4px 9px; }
+  .slist .s-name { flex: 1 1 auto; font-size: 13.5px; color: var(--ink-soft); }
+  .slist .s-val { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 14px; }
+  .slist .del { flex: 0 0 auto; background: none; border: none; color: var(--ink-soft); font-size: 15px; cursor: pointer; opacity: .55; }
   .pb-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 5px 0; color: var(--ink-soft); }
   .pb-row b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
   .pb-row.warn { color: var(--clay); }
@@ -214,6 +236,12 @@
       <h1 class="blue">Previsione <em>stipendio</em></h1>
     </div>
 
+    <div class="ranksel">
+      <button class="rankbtn" id="rk-JU" data-rank="JU">JU<small>Junior</small></button>
+      <button class="rankbtn" id="rk-JUPU" data-rank="JUPU">JUPU<small>Junior Purser</small></button>
+      <button class="rankbtn" id="rk-PU" data-rank="PU">PU<small>Purser</small></button>
+    </div>
+
     <div class="result blue" id="prev-result">
       <div class="r-label">Netto stimato</div>
       <div class="r-amount" id="prev-net">€ 0,00</div>
@@ -230,14 +258,31 @@
       </div>
     </div>
 
+    <div class="card cal-card" id="fixed-card">
+      <button class="cal-toggle"><span>📐 Base fissa mensile</span><span class="chev">›</span></button>
+      <div class="cal-body">
+        <div class="sub" id="fx-note" style="margin:0 0 6px">Scegli il grado qui sopra per caricare le voci fisse.</div>
+        <div class="fxsec inc">Entrate</div>
+        <div class="fxrow"><div class="fxl">Stipendio base</div><b id="fx-stip">€ 0</b></div>
+        <div class="fxrow"><div class="fxl">Indennità agg. volo</div><b id="fx-agg">€ 0</b></div>
+        <div class="fxrow"><div class="fxl">IVMG <small>(ind. volo minima garantita)</small></div><b id="fx-ivmg">€ 0</b></div>
+        <div class="fxrow" id="fx-altre-row"><div class="fxl">Altre competenze <small>(detrazioni + bonus 100€ + esente)</small></div><b id="fx-altre">€ 0</b></div>
+        <div class="fxsec ded">Trattenute</div>
+        <div class="fxrow"><div class="fxl">Contributi INPS <small>(previdenza)</small><span class="fxeq">= FPLD + Fondo Volo + FIS + CIGS + solidarietà</span></div><b id="fx-inps">€ 0</b></div>
+        <div class="fxrow"><div class="fxl">IRPEF + addizionali <small>(tasse)</small><span class="fxeq">= imposta IRPEF + add. regionale + add. comunale</span></div><b id="fx-irpef">€ 0</b></div>
+        <div class="fxrow"><label class="fxchk" for="fx-sind-chk"><input type="checkbox" id="fx-sind-chk"> Sindacato <small>(opzionale, se iscritto)</small></label><b id="fx-sind">€ 0</b></div>
+        <div class="fsub" style="margin-top:12px"><span>Base netta fissa</span><b id="pf-net">€ 0,00</b></div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="label">Volo e giornate del mese</div>
       <div class="field">
         <div class="fl"><div class="fn">Ore di volo (HFA)</div><div class="fd tax">× 5,70 €/h · tassabile</div></div>
         <div class="qty"><input class="pinput" id="q-hfa" type="text" inputmode="decimal" /><span class="qv" id="v-hfa">€ 0</span></div>
       </div>
-      <div class="field">
-        <div class="fl"><div class="fn">Ore di volo da n.1 (CSS)</div><div class="fd tax">× 6,88 €/h · tassabile</div></div>
+      <div class="field" id="field-css">
+        <div class="fl"><div class="fn">Ore di volo da n.1 (CSS)</div><div class="fd tax">× 6,88 €/h · solo JUPU</div></div>
         <div class="qty"><input class="pinput" id="q-css" type="text" inputmode="decimal" /><span class="qv" id="v-css">€ 0</span></div>
       </div>
       <div class="field">
@@ -264,24 +309,19 @@
         <div class="fl"><div class="fn">Diarie extra notturne</div><div class="fd free">atterraggio dopo l1, fine blocco · esente</div></div>
         <div class="qty"><input class="pinput" id="q-extra" type="text" inputmode="numeric" /><span class="qv" id="v-extra">€ 0</span></div>
       </div>
-      <div class="field">
-        <div class="fl"><div class="fn">Commissione vendita</div><div class="fd tax">€ diretti · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-comm" type="text" inputmode="decimal" /><span class="qv" id="v-comm">€ 0</span></div>
-      </div>
     </div>
 
-    <div class="card cal-card" id="fixed-card">
-      <button class="cal-toggle"><span>📐 Base fissa mensile</span><span class="chev">›</span></button>
-      <div class="cal-body">
-        <div class="sub" style="margin:0 0 10px">Le voci fisse della busta (cambiano col grado: Junior / JUPU / PU). Inseriscile e tarale finché il "Netto stimato" coincide con una busta vera.</div>
-        <div class="field"><div class="fl"><div class="fn">Stipendio base</div><div class="fd free">entrata</div></div><input class="pinput" id="pf-base" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">Indennità di volo (IVMG + agg.)</div><div class="fd free">entrata</div></div><input class="pinput" id="pf-volo" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">Altre competenze fisse</div><div class="fd free">detrazioni, bonus 100€, esente</div></div><input class="pinput" id="pf-altre" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">Contributi INPS</div><div class="fd tax">deduzione</div></div><input class="pinput" id="pf-inps" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">IRPEF e addizionali</div><div class="fd tax">deduzione</div></div><input class="pinput" id="pf-irpef" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">Sindacato / altre trattenute</div><div class="fd tax">deduzione</div></div><input class="pinput" id="pf-altro" type="text" inputmode="decimal" /></div>
-        <div class="fsub" style="margin-top:12px"><span>Base netta fissa</span><b id="pf-net">€ 0,00</b></div>
+    <div class="card">
+      <div class="label">Vendite a bordo · commissioni</div>
+      <div class="sub" style="margin:0 0 12px">Segna le vendite inserite nel dispositivo nei giorni lavorati. La commissione del mese è il 10% del totale (tassabile).</div>
+      <div class="add-form">
+        <input class="dinput" id="s-day" type="text" inputmode="numeric" placeholder="Giorno" style="width:74px;text-align:center" />
+        <input class="name dinput" id="s-amt" type="text" inputmode="decimal" placeholder="Importo venduto €" style="flex:1 1 auto;text-align:right" />
+        <button class="add-btn" id="s-add" style="background:var(--blue)">+</button>
       </div>
+      <ul class="slist" id="s-list"></ul>
+      <div class="fsub" style="margin-top:10px"><span>Totale vendite del mese</span><b id="s-tot">€ 0,00</b></div>
+      <div class="fsub"><span>Commissione 10% · tassabile</span><b id="s-comm">€ 0,00</b></div>
     </div>
 
     <div class="card cal-card" id="rates-card">
@@ -439,47 +479,103 @@
 
   /* ===== PREVISIONE ===== */
   const PKEY = 'budget:prev7';
-  const IRPEF = 23;    // primo scaglione, fisso per redditi bassi
-  const PDEF = { hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0, comm: 0,
-                 pfBase: 0, pfVolo: 0, pfAltre: 0, pfInps: 0, pfIrpef: 0, pfAltro: 0,
+  const IRPEF = 23;        // primo scaglione
+  const SIND = 5;          // quota sindacato (se iscritto)
+  const RANKS = {
+    JU:   { stip: 0, agg: 0, ivmg: 0, altre: 0, inps: 0, irpef: 0, css: false },      // dati Junior: in attesa screenshot
+    JUPU: { stip: 307.69, agg: 60.83, ivmg: 738.58, altre: 312.60, inps: 204.18, irpef: 112.52, css: true },
+    PU:   { stip: 0, agg: 0, ivmg: 0, altre: 0, inps: 0, irpef: 0, css: false }       // dati Purser: in attesa
+  };
+  const PDEF = { rank: null, sind: false, sales: [], nextSale: 1,
+                 hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0,
                  rhfa: 5.70, rcss: 6.88, rfest: 35.03, rnight: 42.00, rdiaria: 40 };
   let prev = Object.assign({}, PDEF);
-  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', comm:'q-comm' };
-  const CF = { pfBase:'pf-base', pfVolo:'pf-volo', pfAltre:'pf-altre', pfInps:'pf-inps', pfIrpef:'pf-irpef', pfAltro:'pf-altro',
-               rhfa:'c-rhfa', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria' };
+  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra' };
+  const CF = { rhfa:'c-rhfa', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria' };
 
   function loadPrev() {
     try { const raw = localStorage.getItem(PKEY); if (raw) prev = Object.assign({}, PDEF, JSON.parse(raw)); } catch (e) {}
+    if (!Array.isArray(prev.sales)) prev.sales = [];
     for (const k in QF) $(QF[k]).value = toField(prev[k]);
     for (const k in CF) $(CF[k]).value = toField(prev[k]);
-    renderPrev(); savePrev();
+    $('fx-sind-chk').checked = !!prev.sind;
+    applyRank(); renderSales(); renderPrev(); savePrev();
   }
   function savePrev() { try { localStorage.setItem(PKEY, JSON.stringify(prev)); } catch (e) {} }
+
+  function applyRank() {
+    ['JU','JUPU','PU'].forEach(k => $('rk-'+k).classList.toggle('active', prev.rank === k));
+    const r = prev.rank ? RANKS[prev.rank] : null;
+    $('field-css').style.display = (r && r.css) ? '' : 'none';
+    if (!prev.rank) $('fx-note').textContent = 'Scegli il grado qui sopra per caricare le voci fisse.';
+    else if (r.stip === 0 && r.ivmg === 0) $('fx-note').textContent = 'Dati ' + prev.rank + ' non ancora inseriti — in arrivo.';
+    else $('fx-note').textContent = 'Voci fisse del grado ' + prev.rank + '. Cambia grado in alto per aggiornarle.';
+  }
+
+  function salesTotal() { return prev.sales.reduce((s, x) => s + (x.amount || 0), 0); }
+  function renderSales() {
+    const ul = $('s-list'); ul.innerHTML = '';
+    if (!prev.sales.length) { ul.innerHTML = '<div class="empty">Nessuna vendita segnata.</div>'; }
+    else {
+      prev.sales.slice().sort((a, b) => (a.day || 0) - (b.day || 0)).forEach(it => {
+        const li = document.createElement('li');
+        li.innerHTML = '<span class="s-day"></span><span class="s-name">venduto a bordo</span><span class="s-val"></span><button class="del">✕</button>';
+        li.querySelector('.s-day').textContent = 'g. ' + (it.day || '—');
+        li.querySelector('.s-val').textContent = fmt.format(it.amount || 0);
+        li.querySelector('.del').onclick = () => { prev.sales = prev.sales.filter(x => x.id !== it.id); savePrev(); renderSales(); renderPrev(); };
+        ul.appendChild(li);
+      });
+    }
+    const tot = salesTotal();
+    $('s-tot').textContent = fmt.format(tot);
+    $('s-comm').textContent = fmt.format(tot * 0.10);
+  }
+
   function renderPrev() {
     const g = prev;
-    const eHfa = g.hfa * g.rhfa, eCss = g.css * g.rcss, eNight = g.night * g.rnight, eBank = g.bank * g.rfest,
-          eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra = g.extra * g.rdiaria, eComm = g.comm;
+    const r = g.rank ? RANKS[g.rank] : { stip:0, agg:0, ivmg:0, altre:0, inps:0, irpef:0, css:false };
+    const cssH = r.css ? g.css : 0;
+    const eHfa = g.hfa * g.rhfa, eCss = cssH * g.rcss, eNight = g.night * g.rnight, eBank = g.bank * g.rfest,
+          eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra = g.extra * g.rdiaria;
+    const comm = salesTotal() * 0.10;
     $('v-hfa').textContent = fmt0.format(eHfa); $('v-css').textContent = fmt0.format(eCss); $('v-night').textContent = fmt0.format(eNight);
     $('v-bank').textContent = fmt0.format(eBank); $('v-ferie').textContent = fmt0.format(eFerie); $('v-standby').textContent = fmt0.format(eStandby);
-    $('v-fly').textContent = fmt0.format(eFly); $('v-extra').textContent = fmt0.format(eExtra); $('v-comm').textContent = fmt0.format(eComm);
+    $('v-fly').textContent = fmt0.format(eFly); $('v-extra').textContent = fmt0.format(eExtra);
+    const sind = g.sind ? SIND : 0;
+    $('fx-stip').textContent = fmt0.format(r.stip); $('fx-agg').textContent = fmt0.format(r.agg); $('fx-ivmg').textContent = fmt0.format(r.ivmg);
+    $('fx-altre').textContent = fmt0.format(r.altre);
+    $('fx-inps').textContent = '− ' + fmt0.format(r.inps); $('fx-irpef').textContent = '− ' + fmt0.format(r.irpef);
+    $('fx-sind').textContent = '− ' + fmt0.format(sind);
+    const base = r.stip + r.agg + r.ivmg + r.altre - r.inps - r.irpef - sind;
     const ivo = eHfa + eCss;
-    const base = g.pfBase + g.pfVolo + g.pfAltre - g.pfInps - g.pfIrpef - g.pfAltro;
-    const taxableGross = ivo + eNight + eBank + eFerie + eStandby + eComm;
+    const taxableGross = ivo + eNight + eBank + eFerie + eStandby + comm;
     const taxfree = eFly + eExtra;
-    const taxableNet = taxableGross * (1 - IRPEF / 100);
-    const net = base + taxfree + taxableNet;
+    const net = base + taxfree + taxableGross * (1 - IRPEF / 100);
     $('pf-net').textContent = fmt.format(base);
     $('prev-net').textContent = fmt.format(net);
     $('pb-base').textContent = fmt.format(base); $('pb-ivo').textContent = fmt.format(ivo * (1 - IRPEF / 100));
     $('pb-fly').textContent = fmt.format(taxfree); $('pb-tax').textContent = fmt.format((taxableGross - ivo) * (1 - IRPEF / 100));
-    $('prev-note').textContent = 'Volo: ' + (g.hfa + g.css) + ' h (IVO ' + fmt0.format(ivo) + ' lordi). Voci tassabili lorde ' + fmt0.format(taxableGross) + '. Stima indicativa.';
+    $('prev-note').textContent = g.rank ? ('Grado ' + g.rank + ' · volo ' + (g.hfa + cssH) + ' h · commissione ' + fmt0.format(comm) + '. Stima indicativa.') : 'Scegli il grado per la stima.';
   }
+
+  ['JU','JUPU','PU'].forEach(k => { $('rk-'+k).onclick = () => { prev.rank = k; savePrev(); applyRank(); renderPrev(); }; });
+  $('fx-sind-chk').addEventListener('change', e => { prev.sind = e.target.checked; savePrev(); renderPrev(); });
   for (const k in QF) $(QF[k]).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
   for (const k in CF) $(CF[k]).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
+  $('s-add').onclick = () => {
+    const amt = parseNum($('s-amt').value); if (isNaN(amt)) { $('s-amt').focus(); return; }
+    const day = parseNum($('s-day').value);
+    prev.sales.push({ id: prev.nextSale++, day: isNaN(day) ? 0 : Math.round(day), amount: amt });
+    $('s-day').value = ''; $('s-amt').value = ''; $('s-day').focus();
+    savePrev(); renderSales(); renderPrev();
+  };
+  $('s-amt').addEventListener('keydown', e => { if (e.key === 'Enter') $('s-add').click(); });
+  $('s-day').addEventListener('keydown', e => { if (e.key === 'Enter') $('s-amt').focus(); });
   $('prev-reset').onclick = () => {
-    if (!confirm('Azzero le quantità del mese? Le tariffe restano invariate.')) return;
+    if (!confirm('Azzero le quantità e le vendite del mese? Grado, tariffe e sindacato restano.')) return;
     for (const k in QF) { prev[k] = 0; $(QF[k]).value = ''; }
-    savePrev(); renderPrev();
+    prev.sales = [];
+    savePrev(); renderSales(); renderPrev();
   };
 
   /* ===== SCHEDE ===== */
