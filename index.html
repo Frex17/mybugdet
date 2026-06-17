@@ -309,11 +309,15 @@
         <div class="fl"><div class="fn">Diarie extra notturne</div><div class="fd free">atterraggio dopo l1, fine blocco · esente</div></div>
         <div class="qty"><input class="pinput" id="q-extra" type="text" inputmode="numeric" /><span class="qv" id="v-extra">€ 0</span></div>
       </div>
+      <div class="field">
+        <div class="fl"><div class="fn">VTO · Voluntary Time Off</div><div class="fd tax">giorni non pagati · detrazione</div></div>
+        <div class="qty"><input class="pinput" id="q-vto" type="text" inputmode="numeric" /><span class="qv" id="v-vto">€ 0</span></div>
+      </div>
     </div>
 
     <div class="card">
       <div class="label">Vendite a bordo · commissioni</div>
-      <div class="sub" style="margin:0 0 12px">Segna le vendite inserite nel dispositivo nei giorni lavorati. La commissione del mese è il 10% del totale (tassabile).</div>
+      <div class="sub" style="margin:0 0 12px">Segna le vendite inserite nel dispositivo nei giorni lavorati. La commissione del mese è il 10% del totale.</div>
       <div class="add-form">
         <input class="dinput" id="s-day" type="text" inputmode="numeric" placeholder="Giorno" style="width:74px;text-align:center" />
         <input class="name dinput" id="s-amt" type="text" inputmode="decimal" placeholder="Importo venduto €" style="flex:1 1 auto;text-align:right" />
@@ -321,7 +325,7 @@
       </div>
       <ul class="slist" id="s-list"></ul>
       <div class="fsub" style="margin-top:10px"><span>Totale vendite del mese</span><b id="s-tot">€ 0,00</b></div>
-      <div class="fsub"><span>Commissione 10% · tassabile</span><b id="s-comm">€ 0,00</b></div>
+      <div class="fsub"><span>Commissione 10% del mese</span><b id="s-comm">€ 0,00</b></div>
     </div>
 
     <div class="card cal-card" id="rates-card">
@@ -482,15 +486,15 @@
   const IRPEF = 23;        // primo scaglione
   const SIND = 5;          // quota sindacato (se iscritto)
   const RANKS = {
-    JU:   { stip: 0, agg: 0, ivmg: 0, altre: 0, inps: 0, irpef: 0, css: false },      // dati Junior: in attesa screenshot
-    JUPU: { stip: 307.69, agg: 60.83, ivmg: 738.58, altre: 312.60, inps: 204.18, irpef: 112.52, css: true },
-    PU:   { stip: 0, agg: 0, ivmg: 0, altre: 0, inps: 0, irpef: 0, css: false }       // dati Purser: in attesa
+    JU:   { stip: 230.77, agg: 60.83, ivmg: 609.66, altre: 317.06, inps: 204.18, irpef: 116.30, css: false, vto: 47.43 },
+    JUPU: { stip: 307.69, agg: 60.83, ivmg: 738.58, altre: 312.60, inps: 204.18, irpef: 112.52, css: true,  vto: 62.48 },
+    PU:   { stip: 0, agg: 0, ivmg: 0, altre: 0, inps: 0, irpef: 0, css: false, vto: 0 }       // dati Purser: in attesa
   };
   const PDEF = { rank: null, sind: false, sales: [], nextSale: 1,
-                 hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0,
+                 hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0, vto: 0,
                  rhfa: 5.70, rcss: 6.88, rfest: 35.03, rnight: 42.00, rdiaria: 40 };
   let prev = Object.assign({}, PDEF);
-  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra' };
+  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', vto:'q-vto' };
   const CF = { rhfa:'c-rhfa', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria' };
 
   function loadPrev() {
@@ -533,14 +537,15 @@
 
   function renderPrev() {
     const g = prev;
-    const r = g.rank ? RANKS[g.rank] : { stip:0, agg:0, ivmg:0, altre:0, inps:0, irpef:0, css:false };
+    const r = g.rank ? RANKS[g.rank] : { stip:0, agg:0, ivmg:0, altre:0, inps:0, irpef:0, css:false, vto:0 };
     const cssH = r.css ? g.css : 0;
     const eHfa = g.hfa * g.rhfa, eCss = cssH * g.rcss, eNight = g.night * g.rnight, eBank = g.bank * g.rfest,
           eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra = g.extra * g.rdiaria;
-    const comm = salesTotal() * 0.10;
+    const eVto = g.vto * (r.vto || 0);
     $('v-hfa').textContent = fmt0.format(eHfa); $('v-css').textContent = fmt0.format(eCss); $('v-night').textContent = fmt0.format(eNight);
     $('v-bank').textContent = fmt0.format(eBank); $('v-ferie').textContent = fmt0.format(eFerie); $('v-standby').textContent = fmt0.format(eStandby);
     $('v-fly').textContent = fmt0.format(eFly); $('v-extra').textContent = fmt0.format(eExtra);
+    $('v-vto').textContent = eVto ? ('− ' + fmt0.format(eVto)) : fmt0.format(0);
     const sind = g.sind ? SIND : 0;
     $('fx-stip').textContent = fmt0.format(r.stip); $('fx-agg').textContent = fmt0.format(r.agg); $('fx-ivmg').textContent = fmt0.format(r.ivmg);
     $('fx-altre').textContent = fmt0.format(r.altre);
@@ -548,14 +553,14 @@
     $('fx-sind').textContent = '− ' + fmt0.format(sind);
     const base = r.stip + r.agg + r.ivmg + r.altre - r.inps - r.irpef - sind;
     const ivo = eHfa + eCss;
-    const taxableGross = ivo + eNight + eBank + eFerie + eStandby + comm;
+    const taxableGross = ivo + eNight + eBank + eFerie + eStandby;
     const taxfree = eFly + eExtra;
-    const net = base + taxfree + taxableGross * (1 - IRPEF / 100);
+    const net = base + taxfree + taxableGross * (1 - IRPEF / 100) - eVto;
     $('pf-net').textContent = fmt.format(base);
     $('prev-net').textContent = fmt.format(net);
     $('pb-base').textContent = fmt.format(base); $('pb-ivo').textContent = fmt.format(ivo * (1 - IRPEF / 100));
     $('pb-fly').textContent = fmt.format(taxfree); $('pb-tax').textContent = fmt.format((taxableGross - ivo) * (1 - IRPEF / 100));
-    $('prev-note').textContent = g.rank ? ('Grado ' + g.rank + ' · volo ' + (g.hfa + cssH) + ' h · commissione ' + fmt0.format(comm) + '. Stima indicativa.') : 'Scegli il grado per la stima.';
+    $('prev-note').textContent = g.rank ? ('Grado ' + g.rank + ' · volo ' + (g.hfa + cssH) + ' h' + (eVto ? (' · VTO −' + fmt0.format(eVto)) : '') + '. Stima indicativa.') : 'Scegli il grado per la stima.';
   }
 
   ['JU','JUPU','PU'].forEach(k => { $('rk-'+k).onclick = () => { prev.rank = k; savePrev(); applyRank(); renderPrev(); }; });
