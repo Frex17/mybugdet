@@ -504,7 +504,7 @@
   }; });
 
   /* ===== DEBITI ===== */
-  const DKEY = 'budget:debts';
+  const DKEY = 'budget:debts2';
   const SEED_ASOF = '2026-06-17'; // data a cui i numeri qui sotto sono corretti
   function isoOf(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function parseISO(s) { const p = String(s).split('-'); return new Date(+p[0], (+p[1]) - 1, +p[2]); }
@@ -521,14 +521,14 @@
     return c;
   }
   const DEBT_SEED = [
-    { id: 1, name: 'Prestito ING', group: 'Prestiti', rata: 262.73, day: 1, remaining: 38 },
+    { id: 1, name: 'Prestito ING', group: 'Prestiti', rata: 262.73, day: 1, remaining: 38, principal: 8201.36, mrate: 0.0104738 },
     { id: 2, name: 'Prestito Cofidis', group: 'Prestiti', rata: 132.90, day: 1, remaining: 42 },
     { id: 3, name: 'Credito Cofidis', group: 'Prestiti', rata: 122.83, day: 1, remaining: 7 },
     { id: 4, name: 'Columbia Sportswear', group: 'PayPal', rata: 38.12, day: 10, remaining: 8 },
     { id: 5, name: 'Philips Hue', group: 'PayPal', rata: 79.80, day: 12, remaining: 6 },
     { id: 6, name: 'Olivia Rodrigo (1/4)', group: 'PayPal', rata: 27.36, day: 5, remaining: 5 },
     { id: 7, name: 'Discoteca Laziale', group: 'PayPal', rata: 26.60, day: 29, remaining: 2 },
-    { id: 8, name: 'Amica Farmacia', group: 'PayPal', rata: 26.83, day: 20, remaining: 2 },
+    { id: 8, name: 'Amica Farmacia', group: 'PayPal', rata: 26.83, day: 30, remaining: 2 },
     { id: 9, name: 'Martina - Shakira', group: 'Revolut', rata: 60.83, day: 2, remaining: 1 },
     { id: 10, name: 'Angela - Gracie Abrams', group: 'Revolut', rata: 28.16, day: 2, remaining: 2 },
     { id: 11, name: 'Angela - Paul Kalkbrenner', group: 'Revolut', rata: 34.50, day: 2, remaining: 1 }
@@ -543,7 +543,14 @@
       const from = parseISO(it.checked);
       if (it.remaining > 0) {
         const due = countDue(it.day, from, today);
-        if (due > 0) { it.remaining = Math.max(0, it.remaining - due); changed = true; }
+        if (due > 0) {
+          const n = Math.min(due, it.remaining);
+          if (it.mrate != null && it.principal != null) {
+            for (let k = 0; k < n; k++) { const interest = it.principal * it.mrate; it.principal = Math.max(0, it.principal - (it.rata - interest)); }
+          }
+          it.remaining = Math.max(0, it.remaining - n);
+          changed = true;
+        }
       }
       if (it.checked !== tIso) { it.checked = tIso; changed = true; }
     });
@@ -575,7 +582,8 @@
       const h = document.createElement('div'); h.className = 'gh'; h.textContent = g; cont.appendChild(h);
       const card = document.createElement('div'); card.className = 'card';
       groups[g].forEach(it => {
-        const res = it.rata * it.remaining; totRes += res; if (it.remaining > 0) totRata += it.rata;
+        const res = (it.mrate != null && it.principal != null) ? it.principal : it.rata * it.remaining;
+        totRes += res; if (it.remaining > 0) totRata += it.rata;
         const done = it.remaining <= 0;
         const li = document.createElement('div'); li.className = 'debt';
         li.innerHTML = '<div class="debt-main"><div class="debt-name' + (done ? ' done' : '') + '"></div><div class="debt-meta"></div></div>' +
@@ -583,7 +591,7 @@
         li.querySelector('.debt-name').textContent = it.name;
         li.querySelector('.debt-meta').textContent = fmt.format(it.rata) + ' · giorno ' + it.day + ' · ' + it.remaining + ' rate · fine ' + endLabel(it.day, it.remaining);
         li.querySelector('.debt-res').textContent = fmt.format(res);
-        li.querySelector('.pay').onclick = () => { if (it.remaining > 0) { it.remaining--; saveDebts(); renderDebts(); } };
+        li.querySelector('.pay').onclick = () => { if (it.remaining > 0) { if (it.mrate != null && it.principal != null) { const interest = it.principal * it.mrate; it.principal = Math.max(0, it.principal - (it.rata - interest)); } it.remaining--; saveDebts(); renderDebts(); } };
         li.querySelector('.del').onclick = () => { if (confirm('Elimino "' + it.name + '"?')) { debts.items = debts.items.filter(x => x.id !== it.id); saveDebts(); renderDebts(); } };
         card.appendChild(li);
       });
