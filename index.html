@@ -364,7 +364,7 @@
   function nextPayday() { const now = new Date(); let p = payday(now.getFullYear(), now.getMonth()); if (now.setHours(0,0,0,0) > p.getTime()) p = payday(now.getFullYear(), now.getMonth() + 1); return p; }
   function loadBudget() {
     try { const raw = localStorage.getItem(KEY); if (raw) { const s = JSON.parse(raw); state = { salary: s.salary || 0, fixed: s.fixed || s.expenses || [], variable: s.variable || [] }; } } catch (e) {}
-    $('salary').value = toField(state.salary); renderCalendar(); render();
+    $('salary').value = toField(state.salary); renderCalendar(); render(); saveBudget();
   }
   function saveBudget() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
   function makeAdder(listKey, nameId, amtId) { return function () {
@@ -440,8 +440,8 @@
   /* ===== PREVISIONE ===== */
   const PKEY = 'budget:prev7';
   const IRPEF = 23;    // primo scaglione, fisso per redditi bassi
-  const PDEF = { hfa: 24, css: 6, night: 1, bank: 0, ferie: 0, standby: 6, fly: 7, extra: 0, comm: 18,
-                 pfBase: 307.69, pfVolo: 799.41, pfAltre: 312.60, pfInps: 204.18, pfIrpef: 112.52, pfAltro: 5,
+  const PDEF = { hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0, comm: 0,
+                 pfBase: 0, pfVolo: 0, pfAltre: 0, pfInps: 0, pfIrpef: 0, pfAltro: 0,
                  rhfa: 5.70, rcss: 6.88, rfest: 35.03, rnight: 42.00, rdiaria: 40 };
   let prev = Object.assign({}, PDEF);
   const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', comm:'q-comm' };
@@ -452,7 +452,7 @@
     try { const raw = localStorage.getItem(PKEY); if (raw) prev = Object.assign({}, PDEF, JSON.parse(raw)); } catch (e) {}
     for (const k in QF) $(QF[k]).value = toField(prev[k]);
     for (const k in CF) $(CF[k]).value = toField(prev[k]);
-    renderPrev();
+    renderPrev(); savePrev();
   }
   function savePrev() { try { localStorage.setItem(PKEY, JSON.stringify(prev)); } catch (e) {} }
   function renderPrev() {
@@ -507,20 +507,8 @@
     }
     return c;
   }
-  const DEBT_SEED = [
-    { id: 1, name: 'Prestito ING', group: 'Prestiti', rata: 262.73, day: 1, remaining: 38, principal: 8201.36, mrate: 0.0104738 },
-    { id: 2, name: 'Prestito Cofidis', group: 'Prestiti', rata: 132.90, day: 1, remaining: 42 },
-    { id: 3, name: 'Credito Cofidis', group: 'Prestiti', rata: 122.83, day: 1, remaining: 7 },
-    { id: 4, name: 'Columbia Sportswear', group: 'PayPal', rata: 38.12, day: 10, remaining: 8 },
-    { id: 5, name: 'Philips Hue', group: 'PayPal', rata: 79.80, day: 12, remaining: 6 },
-    { id: 6, name: 'Olivia Rodrigo (1/4)', group: 'PayPal', rata: 27.36, day: 5, remaining: 5 },
-    { id: 7, name: 'Discoteca Laziale', group: 'PayPal', rata: 26.60, day: 29, remaining: 2 },
-    { id: 8, name: 'Amica Farmacia', group: 'PayPal', rata: 26.83, day: 30, remaining: 2 },
-    { id: 9, name: 'Martina - Shakira', group: 'Revolut', rata: 60.83, day: 2, remaining: 1 },
-    { id: 10, name: 'Angela - Gracie Abrams', group: 'Revolut', rata: 28.16, day: 2, remaining: 2 },
-    { id: 11, name: 'Angela - Paul Kalkbrenner', group: 'Revolut', rata: 34.50, day: 2, remaining: 1 }
-  ];
-  let debts = { items: DEBT_SEED.map(x => Object.assign({ checked: SEED_ASOF }, x)), amex: { amount: 344, day: 29 }, nextId: 12 };
+  const DEBT_SEED = [];
+  let debts = { items: DEBT_SEED.map(x => Object.assign({ checked: SEED_ASOF }, x)), amex: { amount: 0, day: 29 }, nextId: 12 };
 
   function autoSettle() {
     const today = new Date(); today.setHours(0, 0, 0, 0); const tIso = isoOf(today);
@@ -548,7 +536,7 @@
     try { const raw = localStorage.getItem(DKEY); if (raw) { const d = JSON.parse(raw); debts = { items: d.items || [], amex: d.amex || { amount: 0, day: 29 }, nextId: d.nextId || 100 }; } } catch (e) {}
     autoSettle();
     if ($('amex-amt')) { $('amex-amt').value = toField(debts.amex.amount); $('amex-day').value = toField(debts.amex.day); }
-    renderDebts();
+    renderDebts(); saveDebts();
   }
   function saveDebts() { try { localStorage.setItem(DKEY, JSON.stringify(debts)); } catch (e) {} }
   function endLabel(day, remaining) {
