@@ -311,6 +311,18 @@
       <div class="r-note" id="deb-note"></div>
     </div>
 
+    <div class="card">
+      <div class="label">Amex (carta · variabile)</div>
+      <div class="field">
+        <div class="fl"><div class="fn">Importo da pagare</div><div class="fd">si azzera il 21, paghi il 29</div></div>
+        <input class="pinput" id="amex-amt" type="text" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Giorno di pagamento</div></div>
+        <input class="pinput" id="amex-day" type="text" inputmode="numeric" />
+      </div>
+    </div>
+
     <div id="deb-groups"></div>
 
     <div class="card">
@@ -426,10 +438,10 @@
   $('reset').onclick = () => { if (!confirm('Vuoi davvero azzerare stipendio e tutte le spese?')) return; state = { salary: 0, fixed: [], variable: [] }; try { localStorage.removeItem(KEY); } catch (e) {} $('salary').value = ''; render(); };
 
   /* ===== PREVISIONE ===== */
-  const PKEY = 'budget:prev6';
+  const PKEY = 'budget:prev7';
   const IRPEF = 23;    // primo scaglione, fisso per redditi bassi
-  const PDEF = { hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0, comm: 0,
-                 pfBase: 0, pfVolo: 0, pfAltre: 0, pfInps: 0, pfIrpef: 0, pfAltro: 0,
+  const PDEF = { hfa: 24, css: 6, night: 1, bank: 0, ferie: 0, standby: 6, fly: 7, extra: 0, comm: 18,
+                 pfBase: 307.69, pfVolo: 799.41, pfAltre: 312.60, pfInps: 204.18, pfIrpef: 112.52, pfAltro: 5,
                  rhfa: 5.70, rcss: 6.88, rfest: 35.03, rnight: 42.00, rdiaria: 40 };
   let prev = Object.assign({}, PDEF);
   const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', comm:'q-comm' };
@@ -479,7 +491,7 @@
   }; });
 
   /* ===== DEBITI ===== */
-  const DKEY = 'budget:debts2';
+  const DKEY = 'budget:debts3';
   const SEED_ASOF = '2026-06-17'; // data a cui i numeri qui sotto sono corretti
   function isoOf(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function parseISO(s) { const p = String(s).split('-'); return new Date(+p[0], (+p[1]) - 1, +p[2]); }
@@ -495,8 +507,20 @@
     }
     return c;
   }
-  const DEBT_SEED = [];
-  let debts = { items: DEBT_SEED.map(x => Object.assign({ checked: SEED_ASOF }, x)), amex: { amount: 0, day: 29 }, nextId: 12 };
+  const DEBT_SEED = [
+    { id: 1, name: 'Prestito ING', group: 'Prestiti', rata: 262.73, day: 1, remaining: 38, principal: 8201.36, mrate: 0.0104738 },
+    { id: 2, name: 'Prestito Cofidis', group: 'Prestiti', rata: 132.90, day: 1, remaining: 42 },
+    { id: 3, name: 'Credito Cofidis', group: 'Prestiti', rata: 122.83, day: 1, remaining: 7 },
+    { id: 4, name: 'Columbia Sportswear', group: 'PayPal', rata: 38.12, day: 10, remaining: 8 },
+    { id: 5, name: 'Philips Hue', group: 'PayPal', rata: 79.80, day: 12, remaining: 6 },
+    { id: 6, name: 'Olivia Rodrigo (1/4)', group: 'PayPal', rata: 27.36, day: 5, remaining: 5 },
+    { id: 7, name: 'Discoteca Laziale', group: 'PayPal', rata: 26.60, day: 29, remaining: 2 },
+    { id: 8, name: 'Amica Farmacia', group: 'PayPal', rata: 26.83, day: 30, remaining: 2 },
+    { id: 9, name: 'Martina - Shakira', group: 'Revolut', rata: 60.83, day: 2, remaining: 1 },
+    { id: 10, name: 'Angela - Gracie Abrams', group: 'Revolut', rata: 28.16, day: 2, remaining: 2 },
+    { id: 11, name: 'Angela - Paul Kalkbrenner', group: 'Revolut', rata: 34.50, day: 2, remaining: 1 }
+  ];
+  let debts = { items: DEBT_SEED.map(x => Object.assign({ checked: SEED_ASOF }, x)), amex: { amount: 344, day: 29 }, nextId: 12 };
 
   function autoSettle() {
     const today = new Date(); today.setHours(0, 0, 0, 0); const tIso = isoOf(today);
