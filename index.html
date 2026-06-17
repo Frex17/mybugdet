@@ -24,7 +24,7 @@
   body { font-family: 'DM Sans', -apple-system, system-ui, sans-serif;
     background-image: radial-gradient(circle at 18% 0%, rgba(185,133,42,.08), transparent 38%), radial-gradient(circle at 90% 12%, rgba(47,107,79,.07), transparent 34%);
     color: var(--ink); min-height: 100vh; }
-  #app { padding: calc(22px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+  #app { padding: calc(22px + env(safe-area-inset-top)) 16px calc(110px + env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
   .page { display: none; }
   .page.active { display: block; animation: fade .25s ease; }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -125,9 +125,11 @@
   .chip { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 6px 11px; font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .chip b { color: var(--ink); }
 
-  .tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 460px; display: flex; background: rgba(251,248,241,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); z-index: 50; }
-  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 0; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; }
-  .tab .ti { font-size: 20px; line-height: 1; } .tab .tl { font-size: 11px; font-weight: 700; }
+  .tabbar { position: fixed; bottom: calc(14px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 28px); max-width: 420px; display: flex; gap: 4px; background: rgba(251,248,241,.82); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(221,211,194,.7); border-radius: 26px; padding: 6px; box-shadow: 0 10px 30px rgba(43,38,34,.18), 0 2px 6px rgba(43,38,34,.08); z-index: 50; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 10px 0; border-radius: 20px; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; transition: background .25s ease, color .2s ease, transform .1s ease; }
+  .tab:active { transform: scale(.94); }
+  .tab .ti { font-size: 19px; line-height: 1; } .tab .tl { font-size: 10.5px; font-weight: 700; }
+  .tab.active { background: #fff; box-shadow: 0 3px 10px rgba(43,38,34,.12); }
   .tab.active { color: var(--green); } .tab.active.t-prev { color: var(--blue); } .tab.active.t-deb { color: var(--clay); }
 
   .result.deb { background: var(--clay); box-shadow: 0 10px 30px rgba(181,80,58,.28); }
@@ -269,33 +271,16 @@
     </div>
 
     <div class="card cal-card" id="fixed-card">
-      <button class="cal-toggle"><span>📐 Parte fissa mensile</span><span class="chev">›</span></button>
+      <button class="cal-toggle"><span>📐 Base fissa mensile</span><span class="chev">›</span></button>
       <div class="cal-body">
-        <div class="fixgrid">
-          <div class="fixcol inc">
-            <h4>Entrate fisse</h4>
-            <div class="frow"><span>Stipendio base</span><span>307,69</span></div>
-            <div class="frow"><span>Ind. agg. volo</span><span>60,83</span></div>
-            <div class="frow"><span>IVMG</span><span>738,58</span></div>
-            <div class="fsub"><span>Totale</span><b>1.107,10</b></div>
-          </div>
-          <div class="fixcol ded">
-            <h4>Deduzioni fisse</h4>
-            <div class="frow"><span>Contributi INPS</span><span>204,18</span></div>
-            <div class="frow"><span>Sindacato</span><span>5,00</span></div>
-            <div class="frow"><span>Add. regionale</span><span>11,60</span></div>
-            <div class="frow"><span>Add. comunale</span><span>7,89</span></div>
-            <div class="fsub"><span>Totale</span><b>228,67</b></div>
-          </div>
-        </div>
-        <div class="fsub" style="margin-top:14px"><span>Base netta fissa (automatica)</span><b id="base-show">€ 0,00</b></div>
-        <div class="rates">
-          <div class="rate">Ora volo (HFA) <b>5,70 €</b></div>
-          <div class="rate">Ora da n.1 (CSS) <b>6,88 €</b></div>
-          <div class="rate">Festivo / Ferie <b>35,03 €</b></div>
-          <div class="rate">Nightstop <b>42,00 €</b></div>
-          <div class="rate">Diaria (volo/standby) <b>40,00 €</b></div>
-        </div>
+        <div class="sub" style="margin:0 0 10px">Le voci fisse della busta (cambiano col grado: Junior / JUPU / PU). Inseriscile e tarale finché il "Netto stimato" coincide con una busta vera.</div>
+        <div class="field"><div class="fl"><div class="fn">Stipendio base</div><div class="fd free">entrata</div></div><input class="pinput" id="pf-base" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">Indennità di volo (IVMG + agg.)</div><div class="fd free">entrata</div></div><input class="pinput" id="pf-volo" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">Altre competenze fisse</div><div class="fd free">detrazioni, bonus 100€, esente</div></div><input class="pinput" id="pf-altre" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">Contributi INPS</div><div class="fd tax">deduzione</div></div><input class="pinput" id="pf-inps" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">IRPEF e addizionali</div><div class="fd tax">deduzione</div></div><input class="pinput" id="pf-irpef" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">Sindacato / altre trattenute</div><div class="fd tax">deduzione</div></div><input class="pinput" id="pf-altro" type="text" inputmode="decimal" /></div>
+        <div class="fsub" style="margin-top:12px"><span>Base netta fissa</span><b id="pf-net">€ 0,00</b></div>
       </div>
     </div>
 
@@ -326,18 +311,6 @@
       <div class="r-note" id="deb-note"></div>
     </div>
 
-    <div class="card">
-      <div class="label">Amex (carta · variabile)</div>
-      <div class="field">
-        <div class="fl"><div class="fn">Importo da pagare</div><div class="fd">si azzera il 21, paghi il 29</div></div>
-        <input class="pinput" id="amex-amt" type="text" inputmode="decimal" />
-      </div>
-      <div class="field">
-        <div class="fl"><div class="fn">Giorno di pagamento</div></div>
-        <input class="pinput" id="amex-day" type="text" inputmode="numeric" />
-      </div>
-    </div>
-
     <div id="deb-groups"></div>
 
     <div class="card">
@@ -349,7 +322,7 @@
         <input class="dinput r" id="d-rata" type="text" inputmode="decimal" placeholder="Rata €" />
         <input class="dinput d" id="d-day" type="text" inputmode="numeric" placeholder="Gg" />
         <input class="dinput n" id="d-rem" type="text" inputmode="numeric" placeholder="Rate" />
-        <select class="dinput" id="d-group"><option>Prestiti</option><option selected>PayPal</option><option>Revolut</option><option>Altro</option></select>
+        <select class="dinput" id="d-group"><option>Prestiti</option><option>Mutuo</option><option>Affitto</option><option>Carta di credito</option><option selected>PayPal</option><option>Revolut</option><option>Altro</option></select>
         <button class="add-btn" id="d-add" style="background:var(--clay)">+</button>
       </div>
     </div>
@@ -453,14 +426,15 @@
   $('reset').onclick = () => { if (!confirm('Vuoi davvero azzerare stipendio e tutte le spese?')) return; state = { salary: 0, fixed: [], variable: [] }; try { localStorage.removeItem(KEY); } catch (e) {} $('salary').value = ''; render(); };
 
   /* ===== PREVISIONE ===== */
-  const PKEY = 'budget:prev4';
-  const BASE = 1098;   // base netta fissa, calibrata sulle buste (senza recupero IRPEF e recupero 100€)
-  const IRPEF = 23;    // primo scaglione, fisso per il tuo reddito
+  const PKEY = 'budget:prev6';
+  const IRPEF = 23;    // primo scaglione, fisso per redditi bassi
   const PDEF = { hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0, comm: 0,
+                 pfBase: 0, pfVolo: 0, pfAltre: 0, pfInps: 0, pfIrpef: 0, pfAltro: 0,
                  rhfa: 5.70, rcss: 6.88, rfest: 35.03, rnight: 42.00, rdiaria: 40 };
   let prev = Object.assign({}, PDEF);
   const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', comm:'q-comm' };
-  const CF = { rhfa:'c-rhfa', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria' };
+  const CF = { pfBase:'pf-base', pfVolo:'pf-volo', pfAltre:'pf-altre', pfInps:'pf-inps', pfIrpef:'pf-irpef', pfAltro:'pf-altro',
+               rhfa:'c-rhfa', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria' };
 
   function loadPrev() {
     try { const raw = localStorage.getItem(PKEY); if (raw) prev = Object.assign({}, PDEF, JSON.parse(raw)); } catch (e) {}
@@ -477,13 +451,14 @@
     $('v-bank').textContent = fmt0.format(eBank); $('v-ferie').textContent = fmt0.format(eFerie); $('v-standby').textContent = fmt0.format(eStandby);
     $('v-fly').textContent = fmt0.format(eFly); $('v-extra').textContent = fmt0.format(eExtra); $('v-comm').textContent = fmt0.format(eComm);
     const ivo = eHfa + eCss;
+    const base = g.pfBase + g.pfVolo + g.pfAltre - g.pfInps - g.pfIrpef - g.pfAltro;
     const taxableGross = ivo + eNight + eBank + eFerie + eStandby + eComm;
     const taxfree = eFly + eExtra;
     const taxableNet = taxableGross * (1 - IRPEF / 100);
-    const net = BASE + taxfree + taxableNet;
-    $('base-show').textContent = fmt.format(BASE);
+    const net = base + taxfree + taxableNet;
+    $('pf-net').textContent = fmt.format(base);
     $('prev-net').textContent = fmt.format(net);
-    $('pb-base').textContent = fmt.format(BASE); $('pb-ivo').textContent = fmt.format(ivo * (1 - IRPEF / 100));
+    $('pb-base').textContent = fmt.format(base); $('pb-ivo').textContent = fmt.format(ivo * (1 - IRPEF / 100));
     $('pb-fly').textContent = fmt.format(taxfree); $('pb-tax').textContent = fmt.format((taxableGross - ivo) * (1 - IRPEF / 100));
     $('prev-note').textContent = 'Volo: ' + (g.hfa + g.css) + ' h (IVO ' + fmt0.format(ivo) + ' lordi). Voci tassabili lorde ' + fmt0.format(taxableGross) + '. Stima indicativa.';
   }
@@ -548,7 +523,7 @@
   function loadDebts() {
     try { const raw = localStorage.getItem(DKEY); if (raw) { const d = JSON.parse(raw); debts = { items: d.items || [], amex: d.amex || { amount: 0, day: 29 }, nextId: d.nextId || 100 }; } } catch (e) {}
     autoSettle();
-    $('amex-amt').value = toField(debts.amex.amount); $('amex-day').value = toField(debts.amex.day);
+    if ($('amex-amt')) { $('amex-amt').value = toField(debts.amex.amount); $('amex-day').value = toField(debts.amex.day); }
     renderDebts();
   }
   function saveDebts() { try { localStorage.setItem(DKEY, JSON.stringify(debts)); } catch (e) {} }
@@ -562,7 +537,7 @@
   }
   function renderDebts() {
     const groups = {}; debts.items.forEach(it => { (groups[it.group] = groups[it.group] || []).push(it); });
-    const order = ['Prestiti', 'PayPal', 'Revolut', 'Altro'];
+    const order = ['Prestiti', 'Mutuo', 'Affitto', 'Carta di credito', 'PayPal', 'Revolut', 'Altro'];
     const cont = $('deb-groups'); cont.innerHTML = '';
     let totRes = 0, totRata = 0;
     order.forEach(g => {
@@ -585,12 +560,15 @@
       });
       cont.appendChild(card);
     });
-    const amex = debts.amex.amount || 0; totRes += amex; totRata += amex;
+    const amex = (debts.amex && debts.amex.amount) || 0; totRes += amex; totRata += amex;
     $('deb-total').textContent = fmt.format(totRes);
-    $('deb-note').textContent = 'Da pagare questo mese: ' + fmt.format(totRata) + ' (rate + Amex).';
+    const hasAmex = !!$('amex-amt');
+    $('deb-note').textContent = 'Da pagare questo mese: ' + fmt.format(totRata) + (hasAmex ? ' (rate + Amex).' : ' (rate).');
   }
-  $('amex-amt').addEventListener('input', e => { const n = parseNum(e.target.value); debts.amex.amount = isNaN(n) ? 0 : n; saveDebts(); renderDebts(); });
-  $('amex-day').addEventListener('input', e => { const n = parseNum(e.target.value); debts.amex.day = isNaN(n) ? 29 : n; saveDebts(); });
+  if ($('amex-amt')) {
+    $('amex-amt').addEventListener('input', e => { const n = parseNum(e.target.value); debts.amex.amount = isNaN(n) ? 0 : n; saveDebts(); renderDebts(); });
+    $('amex-day').addEventListener('input', e => { const n = parseNum(e.target.value); debts.amex.day = isNaN(n) ? 29 : n; saveDebts(); });
+  }
   $('d-add').onclick = () => {
     const name = $('d-name').value.trim(); const rata = parseNum($('d-rata').value); const day = parseNum($('d-day').value); const rem = parseNum($('d-rem').value); const group = $('d-group').value;
     if (!name || isNaN(rata) || rata <= 0 || isNaN(rem) || rem <= 0) return;
