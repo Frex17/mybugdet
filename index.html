@@ -31,8 +31,8 @@
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes slideL { from { opacity: .35; transform: translateX(42px); } to { opacity: 1; transform: translateX(0); } }
   @keyframes slideR { from { opacity: .35; transform: translateX(-42px); } to { opacity: 1; transform: translateX(0); } }
-  .page.active.slide-l { animation: slideL .28s ease; }
-  .page.active.slide-r { animation: slideR .28s ease; }
+  .page.active.slide-l { animation: slideL .3s cubic-bezier(.22,.61,.36,1); }
+  .page.active.slide-r { animation: slideR .3s cubic-bezier(.22,.61,.36,1); }
   .top { margin: 6px 2px 22px; }
   .eyebrow { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; }
   h1 { font-family: 'Fraunces', Georgia, serif; font-weight: 600; font-size: 32px; line-height: 1.05; margin-top: 6px; letter-spacing: -.01em; }
@@ -183,6 +183,12 @@
   .deb-fields select.dinput { flex: 1 1 0; }
   .theme-btn { position: fixed; top: calc(12px + env(safe-area-inset-top)); right: 14px; z-index: 60; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 17px; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; }
   .theme-btn:active { transform: scale(.92); }
+  .os-ios .tabbar { backdrop-filter: blur(28px) saturate(1.8); -webkit-backdrop-filter: blur(28px) saturate(1.8); border-color: rgba(255,255,255,.32); box-shadow: 0 8px 30px rgba(43,38,34,.16), inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 1px rgba(0,0,0,.04); }
+  .os-ios .tab.active { box-shadow: 0 2px 9px rgba(43,38,34,.14), inset 0 1px 0 rgba(255,255,255,.55); }
+  .os-ios .theme-btn { background: var(--bar-bg); backdrop-filter: blur(22px) saturate(1.7); -webkit-backdrop-filter: blur(22px) saturate(1.7); border-color: rgba(255,255,255,.32); box-shadow: 0 4px 16px rgba(43,38,34,.14), inset 0 1px 0 rgba(255,255,255,.4); }
+  .os-android .tabbar { border-radius: 30px; background: var(--card); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-color: var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.16); }
+  .os-android .tab.active { background: var(--blue-soft); box-shadow: none; }
+  .os-android .theme-btn { box-shadow: 0 4px 12px rgba(0,0,0,.18); }
   [data-theme="dark"] {
     --paper: #15120e; --card: #211c16; --field: #2b251d; --ink: #f1ebdf; --ink-soft: #ab9f8b;
     --line: #39322a; --green: #3e9d73; --clay: #d06a50; --clay-soft: #38241f;
@@ -196,7 +202,7 @@
 </head>
 <body>
 <div id="app">
-  <button id="theme-btn" class="theme-btn" aria-label="Tema">🌙</button>
+  <button id="theme-btn" class="theme-btn" aria-label="Tema"></button>
 
   <!-- ===== BUDGET ===== -->
   <div class="page active" id="page-budget">
@@ -653,25 +659,51 @@
     goToPage(target, to > from ? 'left' : (to < from ? 'right' : null));
   }; });
 
-  // swipe orizzontale tra le pagine (senza disturbare lo scroll verticale)
-  let swX = 0, swY = 0, swOn = false;
+  // swipe fluido: la pagina segue il dito, poi scatta
   const appEl = $('app');
-  appEl.addEventListener('touchstart', e => { if (e.touches.length !== 1) { swOn = false; return; } swX = e.touches[0].clientX; swY = e.touches[0].clientY; swOn = true; }, { passive: true });
+  let swStartX = 0, swStartY = 0, swLock = null, swActive = false;
+  function pageEl() { return document.querySelector('.page.active'); }
+  appEl.addEventListener('touchstart', e => { if (e.touches.length !== 1) { swActive = false; return; } swStartX = e.touches[0].clientX; swStartY = e.touches[0].clientY; swLock = null; swActive = true; }, { passive: true });
+  appEl.addEventListener('touchmove', e => {
+    if (!swActive) return;
+    const dx = e.touches[0].clientX - swStartX, dy = e.touches[0].clientY - swStartY;
+    if (swLock === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) swLock = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    if (swLock === 'h') {
+      e.preventDefault();
+      const i = PAGES.indexOf(currentPage());
+      let d = dx;
+      if ((i === 0 && dx > 0) || (i === PAGES.length - 1 && dx < 0)) d = dx * 0.28;
+      const pg = pageEl(); pg.style.transition = 'none'; pg.style.transform = 'translateX(' + d + 'px)';
+      pg.style.opacity = String(1 - Math.min(Math.abs(d) / 520, 0.3));
+    }
+  }, { passive: false });
   appEl.addEventListener('touchend', e => {
-    if (!swOn) return; swOn = false;
-    const dx = e.changedTouches[0].clientX - swX, dy = e.changedTouches[0].clientY - swY;
-    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
-    const i = PAGES.indexOf(currentPage());
-    if (dx < 0 && i < PAGES.length - 1) goToPage(PAGES[i + 1], 'left');
-    else if (dx > 0 && i > 0) goToPage(PAGES[i - 1], 'right');
-  }, { passive: true });
+    if (!swActive) return; swActive = false;
+    if (swLock !== 'h') return;
+    const pg = pageEl();
+    const dx = e.changedTouches[0].clientX - swStartX, i = PAGES.indexOf(currentPage());
+    const next = dx < -60 && i < PAGES.length - 1, prev = dx > 60 && i > 0;
+    if (next || prev) {
+      pg.style.transition = ''; pg.style.transform = ''; pg.style.opacity = '';
+      goToPage(next ? PAGES[i + 1] : PAGES[i - 1], next ? 'left' : 'right');
+    } else {
+      pg.style.transition = 'transform .26s cubic-bezier(.22,.61,.36,1), opacity .2s ease';
+      pg.style.transform = 'translateX(0)'; pg.style.opacity = '1';
+      setTimeout(() => { if (pg) { pg.style.transition = ''; pg.style.transform = ''; pg.style.opacity = ''; } }, 290);
+    }
+  }, { passive: false });
 
   // tema chiaro/scuro
+  const MOON_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
+  const SUN_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   function applyTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
-    $('theme-btn').textContent = t === 'dark' ? '\u2600\ufe0f' : '\U0001f319';
+    $('theme-btn').innerHTML = t === 'dark' ? SUN_SVG : MOON_SVG;
     const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.setAttribute('content', t === 'dark' ? '#15120e' : '#2f6b4f');
   }
+  const ua = navigator.userAgent || '';
+  const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  document.documentElement.classList.add(isIOS ? 'os-ios' : (/Android/.test(ua) ? 'os-android' : 'os-other'));
   let theme = 'light'; try { theme = localStorage.getItem('budget:theme') || 'light'; } catch (e) {}
   applyTheme(theme);
   $('theme-btn').onclick = () => { theme = theme === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('budget:theme', theme); } catch (e) {} applyTheme(theme); };
