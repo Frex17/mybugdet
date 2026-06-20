@@ -334,8 +334,16 @@
         <div class="qty"><input class="pinput" id="q-fly" type="text" inputmode="numeric" /><span class="qv" id="v-fly">€ 0</span></div>
       </div>
       <div class="field">
-        <div class="fl"><div class="fn">Diarie extra notturne</div><div class="fd free">atterraggio dopo l1, fine blocco · esente</div></div>
-        <div class="qty"><input class="pinput" id="q-extra" type="text" inputmode="numeric" /><span class="qv" id="v-extra">€ 0</span></div>
+        <div class="fl"><div class="fn">Diaria extra · rientro 01:00–02:29</div><div class="fd">diaria extra piena</div></div>
+        <div class="qty"><input class="pinput" id="q-extra1" type="text" inputmode="numeric" /><span class="qv" id="v-extra1">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Diaria extra · rientro 02:30–03:59</div><div class="fd">diaria extra + 21 € fissi</div></div>
+        <div class="qty"><input class="pinput" id="q-extra2" type="text" inputmode="numeric" /><span class="qv" id="v-extra2">€ 0</span></div>
+      </div>
+      <div class="field">
+        <div class="fl"><div class="fn">Diaria extra · rientro dopo le 04:00</div><div class="fd">diaria extra con giorno off</div></div>
+        <div class="qty"><input class="pinput" id="q-extra3" type="text" inputmode="numeric" /><span class="qv" id="v-extra3">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Training day</div><div class="fd tax" id="d-train">× 40,30 € · tassabile</div></div>
@@ -523,15 +531,15 @@
   const IRPEF = 23;        // primo scaglione
   const SIND = 5;          // quota sindacato (se iscritto)
   const RANKS = {
-    JU:   { stip:248.85, agg:83.33, ivmg:683.00,  altre:215.14, bonus:101.92, bonusToggle:true,  inps:204.18, irpef:105.59, css:false, vto:47.43, rhfa:4.80, rhfa600:5.38, rcss:0, rcss600:0, rfest:35.00, rnight:42.00, rdiaria:42.11, rtrain:36.30 },
-    JUPU: { stip:327.69, agg:83.33, ivmg:821.58,  altre:213.97, bonus:98.63,  bonusToggle:false, inps:204.18, irpef:93.03,  css:true,  vto:58.27, rhfa:5.90, rhfa600:6.47, rcss:7.14, rcss600:8.41, rfest:42.04, rnight:42.00, rdiaria:42.11, rtrain:40.30 },
-    PU:   { stip:411.54, agg:83.33, ivmg:1325.25, altre:140,    bonus:98.63,  bonusToggle:false, inps:204.18, irpef:280,    css:false, vto:0, rhfa:7.14, rhfa600:8.41, rcss:0, rcss600:0, rfest:49.55, rnight:42.00, rdiaria:42.11, rtrain:46.94 }   // PU: retribuzioni da contratto, tasse stimate
+    JU:   { stip:248.85, agg:83.33, ivmg:683.00,  altre:215.14, bonus:101.92, bonusToggle:true,  inps:204.18, irpef:105.59, css:false, vto:47.43, rhfa:4.80, rhfa600:5.38, rcss:0, rcss600:0, rfest:35.00, rnight:45.00, rdiaria:42.11, rtrain:36.30 },
+    JUPU: { stip:327.69, agg:83.33, ivmg:821.58,  altre:213.97, bonus:98.63,  bonusToggle:false, inps:204.18, irpef:93.03,  css:true,  vto:58.27, rhfa:5.90, rhfa600:6.47, rcss:7.14, rcss600:8.41, rfest:42.04, rnight:45.00, rdiaria:42.11, rtrain:40.30 },
+    PU:   { stip:411.54, agg:83.33, ivmg:1325.25, altre:140,    bonus:98.63,  bonusToggle:false, inps:204.18, irpef:280,    css:false, vto:0, rhfa:7.14, rhfa600:8.41, rcss:0, rcss600:0, rfest:49.55, rnight:45.00, rdiaria:42.11, rtrain:46.94 }   // PU: retribuzioni da contratto, tasse stimate
   };
   const PDEF = { rank: null, sind: false, bonusOn: true, addReg: 0, addCom: 0, ytd: 0, sales: [], nextSale: 1,
-                 hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra: 0, vto: 0, train: 0,
-                 rhfa: 5.90, rhfa600: 6.47, rcss: 7.14, rcss600: 8.41, rfest: 42.04, rnight: 42.00, rdiaria: 42.11, rtrain: 40.30 };
+                 hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra1: 0, extra2: 0, extra3: 0, vto: 0, train: 0,
+                 rhfa: 5.90, rhfa600: 6.47, rcss: 7.14, rcss600: 8.41, rfest: 42.04, rnight: 45.00, rdiaria: 42.11, rtrain: 40.30 };
   let prev = Object.assign({}, PDEF);
-  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra:'q-extra', vto:'q-vto', train:'q-train' };
+  const QF = { hfa:'q-hfa', css:'q-css', night:'q-night', bank:'q-bank', ferie:'q-ferie', standby:'q-standby', fly:'q-fly', extra1:'q-extra1', extra2:'q-extra2', extra3:'q-extra3', vto:'q-vto', train:'q-train' };
   const CF = { rhfa:'c-rhfa', rhfa600:'c-rhfa600', rcss:'c-rcss', rfest:'c-rfest', rnight:'c-rnight', rdiaria:'c-rdiaria', rtrain:'c-rtrain' };
   function r2(n) { return (Math.round((n || 0) * 100) / 100).toFixed(2).replace('.', ','); }
 
@@ -605,7 +613,7 @@
     const cssLow = Math.min(cssH, remC), cssHigh = cssH - cssLow;
     const eCss = cssLow * g.rcss + cssHigh * (g.rcss600 || g.rcss);
     const eNight = g.night * g.rnight, eBank = g.bank * g.rfest,
-          eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra = g.extra * g.rdiaria;
+          eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra1 = g.extra1 * g.rdiaria, eExtra2 = g.extra2 * (g.rdiaria + 21), eExtra3 = g.extra3 * g.rdiaria, eExtra = eExtra1 + eExtra2 + eExtra3;
     const eVto = g.vto * (r.vto || 0);
     const eTrain = g.train * g.rtrain;
     $('d-hfa').textContent = '\u00d7 ' + r2(g.rhfa) + ' \u20ac/h \u00b7 oltre 600h ' + r2(g.rhfa600 || g.rhfa) + ' \u20ac';
@@ -619,7 +627,7 @@
     $('d-train').textContent = '\u00d7 ' + r2(g.rtrain) + ' \u20ac/g \u00b7 tassabile';
     $('v-hfa').textContent = fmt0.format(eHfa); $('v-css').textContent = fmt0.format(eCss); $('v-night').textContent = fmt0.format(eNight);
     $('v-bank').textContent = fmt0.format(eBank); $('v-ferie').textContent = fmt0.format(eFerie); $('v-standby').textContent = fmt0.format(eStandby);
-    $('v-fly').textContent = fmt0.format(eFly); $('v-extra').textContent = fmt0.format(eExtra); $('v-train').textContent = fmt0.format(eTrain);
+    $('v-fly').textContent = fmt0.format(eFly); $('v-extra1').textContent = fmt0.format(eExtra1); $('v-extra2').textContent = fmt0.format(eExtra2); $('v-extra3').textContent = fmt0.format(eExtra3); $('v-train').textContent = fmt0.format(eTrain);
     $('v-vto').textContent = eVto ? ('\u2212 ' + fmt0.format(eVto)) : fmt0.format(0);
     const bonusVal = r.bonusToggle ? (g.bonusOn ? r.bonus : 0) : r.bonus;
     const sind = g.sind ? SIND : 0;
