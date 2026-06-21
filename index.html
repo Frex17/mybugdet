@@ -292,8 +292,8 @@
         <div class="fxsec ded">Trattenute</div>
         <div class="fxrow"><div class="fxl">Contributi INPS <small>(previdenza)</small><span class="fxeq">= FPLD + Fondo Volo + FIS + CIGS + solidarietà</span></div><b id="fx-inps">€ 0</b></div>
         <div class="fxrow"><div class="fxl">IRPEF <small>(imposta sul reddito)</small></div><b id="fx-irpef">€ 0</b></div>
-        <div class="fxrow"><div class="fxl">Add. regionale <small>(residenza · a mano)</small></div><input class="pinput pin-sm" id="fx-addreg" type="text" inputmode="decimal" /></div>
-        <div class="fxrow"><div class="fxl">Add. comunale <small>(residenza · a mano)</small></div><input class="pinput pin-sm" id="fx-addcom" type="text" inputmode="decimal" /></div>
+        <div class="fxrow"><div class="fxl">Add. regionale <small>(residenza · a mano)</small></div><input class="pinput pin-sm" id="fx-addreg" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="fxrow"><div class="fxl">Add. comunale <small>(residenza · a mano)</small></div><input class="pinput pin-sm" id="fx-addcom" type="text" inputmode="decimal" placeholder="0" /></div>
         <div class="fxrow"><label class="fxchk" for="fx-sind-chk"><input type="checkbox" id="fx-sind-chk"> Sindacato <small>(opzionale, se iscritto)</small></label><b id="fx-sind">€ 0</b></div>
         <div class="fsub" style="margin-top:12px"><span>Base netta fissa</span><b id="pf-net">€ 0,00</b></div>
       </div>
@@ -303,55 +303,55 @@
       <div class="label">Volo e giornate del mese</div>
       <div class="field">
         <div class="fl"><div class="fn">Ore di volo già fatte quest'anno</div><div class="fd">per la maggiorazione oltre 600h · si aggiorna da sola con "azzera mese"</div></div>
-        <input class="pinput pin-sm" id="i-ytd" type="text" inputmode="decimal" />
+        <input class="pinput pin-sm" id="i-ytd" type="text" inputmode="decimal" placeholder="0" />
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Ore di volo (HFA)</div><div class="fd tax" id="d-hfa">× 5,70 €/h · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-hfa" type="text" inputmode="decimal" /><span class="qv" id="v-hfa">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-hfa" type="text" inputmode="decimal" placeholder="0" /><span class="qv" id="v-hfa">€ 0</span></div>
       </div>
       <div class="field" id="field-css">
         <div class="fl"><div class="fn">Ore di volo da n.1 (CSS)</div><div class="fd tax" id="d-css">× 6,88 €/h · solo JUPU</div></div>
-        <div class="qty"><input class="pinput" id="q-css" type="text" inputmode="decimal" /><span class="qv" id="v-css">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-css" type="text" inputmode="decimal" placeholder="0" /><span class="qv" id="v-css">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Nightstops</div><div class="fd tax" id="d-night">× 42,00 € · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-night" type="text" inputmode="numeric" /><span class="qv" id="v-night">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-night" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-night">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Giorni festivi (Bank Hol.)</div><div class="fd tax" id="d-bank">× 35,03 € · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-bank" type="text" inputmode="numeric" /><span class="qv" id="v-bank">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-bank" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-bank">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Giorni di ferie</div><div class="fd tax" id="d-ferie">× 35,03 € · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-ferie" type="text" inputmode="numeric" /><span class="qv" id="v-ferie">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-ferie" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-ferie">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Giorni standby / airport duty</div><div class="fd tax" id="d-standby">no-fly diaria · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-standby" type="text" inputmode="numeric" /><span class="qv" id="v-standby">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-standby" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-standby">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Giorni di volo (diaria)</div><div class="fd free" id="d-fly">esentasse · arriva al 100%</div></div>
-        <div class="qty"><input class="pinput" id="q-fly" type="text" inputmode="numeric" /><span class="qv" id="v-fly">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-fly" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-fly">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Diaria extra · rientro 01:00–02:29</div><div class="fd">diaria extra piena</div></div>
-        <div class="qty"><input class="pinput" id="q-extra1" type="text" inputmode="numeric" /><span class="qv" id="v-extra1">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-extra1" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-extra1">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Diaria extra · rientro 02:30–03:59</div><div class="fd">diaria extra + 21 € fissi</div></div>
-        <div class="qty"><input class="pinput" id="q-extra2" type="text" inputmode="numeric" /><span class="qv" id="v-extra2">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-extra2" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-extra2">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Diaria extra · rientro dopo le 04:00</div><div class="fd">diaria extra con giorno off</div></div>
-        <div class="qty"><input class="pinput" id="q-extra3" type="text" inputmode="numeric" /><span class="qv" id="v-extra3">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-extra3" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-extra3">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Training day</div><div class="fd tax" id="d-train">× 40,30 € · tassabile</div></div>
-        <div class="qty"><input class="pinput" id="q-train" type="text" inputmode="numeric" /><span class="qv" id="v-train">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-train" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-train">€ 0</span></div>
       </div>
       <div class="field">
         <div class="fl"><div class="fn">VTO · Voluntary Time Off</div><div class="fd tax" id="d-vto">giorni non pagati · detrazione</div></div>
-        <div class="qty"><input class="pinput" id="q-vto" type="text" inputmode="numeric" /><span class="qv" id="v-vto">€ 0</span></div>
+        <div class="qty"><input class="pinput" id="q-vto" type="text" inputmode="numeric" placeholder="0" /><span class="qv" id="v-vto">€ 0</span></div>
       </div>
     </div>
 
@@ -373,13 +373,13 @@
     <div class="card cal-card" id="rates-card">
       <button class="cal-toggle"><span>⚙️ Tariffe (modificabili)</span><span class="chev">›</span></button>
       <div class="cal-body">
-        <div class="field"><div class="fl"><div class="fn">€/ora volo (HFA)</div></div><input class="pinput" id="c-rhfa" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">€/ora oltre 600h</div></div><input class="pinput" id="c-rhfa600" type="text" inputmode="decimal" /></div>
-        <div class="field" id="field-rcss"><div class="fl"><div class="fn">€/ora da n.1 (CSS)</div></div><input class="pinput" id="c-rcss" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">€ festivo / ferie</div></div><input class="pinput" id="c-rfest" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">€ nightstop</div></div><input class="pinput" id="c-rnight" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">€/giorno diaria</div><div class="fd">volo e standby, stesso importo</div></div><input class="pinput" id="c-rdiaria" type="text" inputmode="decimal" /></div>
-        <div class="field"><div class="fl"><div class="fn">€/giorno training</div></div><input class="pinput" id="c-rtrain" type="text" inputmode="decimal" /></div>
+        <div class="field"><div class="fl"><div class="fn">€/ora volo (HFA)</div></div><input class="pinput" id="c-rhfa" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="field"><div class="fl"><div class="fn">€/ora oltre 600h</div></div><input class="pinput" id="c-rhfa600" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="field" id="field-rcss"><div class="fl"><div class="fn">€/ora da n.1 (CSS)</div></div><input class="pinput" id="c-rcss" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="field"><div class="fl"><div class="fn">€ festivo / ferie</div></div><input class="pinput" id="c-rfest" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="field"><div class="fl"><div class="fn">€ nightstop</div></div><input class="pinput" id="c-rnight" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="field"><div class="fl"><div class="fn">€/giorno diaria</div><div class="fd">volo e standby, stesso importo</div></div><input class="pinput" id="c-rdiaria" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="field"><div class="fl"><div class="fn">€/giorno training</div></div><input class="pinput" id="c-rtrain" type="text" inputmode="decimal" placeholder="0" /></div>
       </div>
     </div>
 
@@ -403,11 +403,11 @@
       <div class="label">Amex (carta · variabile)</div>
       <div class="field">
         <div class="fl"><div class="fn">Importo da pagare</div><div class="fd">si azzera il 21, paghi il 29</div></div>
-        <input class="pinput" id="amex-amt" type="text" inputmode="decimal" />
+        <input class="pinput" id="amex-amt" type="text" inputmode="decimal" placeholder="0" />
       </div>
       <div class="field">
         <div class="fl"><div class="fn">Giorno di pagamento</div></div>
-        <input class="pinput" id="amex-day" type="text" inputmode="numeric" />
+        <input class="pinput" id="amex-day" type="text" inputmode="numeric" placeholder="0" />
       </div>
     </div>
 
@@ -443,7 +443,7 @@
   const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
   const $ = id => document.getElementById(id);
   function parseNum(v) { if (v == null) return NaN; const n = parseFloat(String(v).trim().replace(/\s/g,'').replace(',', '.')); return isNaN(n) ? NaN : n; }
-  function toField(n) { return (n || n === 0) ? String(n).replace('.', ',') : ''; }
+  function toField(n) { return n ? String(n).replace('.', ',') : ''; }
 
   /* ===== BUDGET ===== */
   const KEY = 'budget:data';
