@@ -6,9 +6,9 @@
 <title>Il mio budget</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Budget">
-<meta name="theme-color" content="#2f6b4f">
+<meta name="theme-color" content="#f4efe6">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +26,7 @@
   body { font-family: 'DM Sans', -apple-system, system-ui, sans-serif;
     background-image: radial-gradient(circle at 18% 0%, rgba(185,133,42,.08), transparent 38%), radial-gradient(circle at 90% 12%, rgba(47,107,79,.07), transparent 34%);
     color: var(--ink); min-height: 100vh; }
-  #app { padding: calc(22px + env(safe-area-inset-top)) 16px calc(110px + env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
+  #app { padding: calc(26px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom)); max-width: 460px; margin: 0 auto; }
   .pages-wrap { overflow: hidden; }
   .pages-track { display: flex; align-items: flex-start; transition: transform .32s cubic-bezier(.22,.61,.36,1); will-change: transform; }
   .page { flex: 0 0 100%; width: 100%; min-width: 100%; }
@@ -147,7 +147,7 @@
   .pb-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 5px 0; color: var(--ink-soft); }
   .pb-row b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
 
-  .tabbar { position: fixed; bottom: calc(14px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: calc(100% - 28px); max-width: 420px; display: flex; gap: 4px; background: var(--bar-bg); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid var(--bar-border); border-radius: 26px; padding: 6px; box-shadow: 0 10px 30px rgba(43,38,34,.18), 0 2px 6px rgba(43,38,34,.08); z-index: 50; }
+  .tabbar { position: fixed; bottom: max(8px, calc(env(safe-area-inset-bottom) - 16px)); left: 50%; transform: translateX(-50%); width: calc(100% - 28px); max-width: 420px; display: flex; gap: 4px; background: var(--bar-bg); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid var(--bar-border); border-radius: 26px; padding: 6px; box-shadow: 0 10px 30px rgba(43,38,34,.18), 0 2px 6px rgba(43,38,34,.08); z-index: 50; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 10px 0; border-radius: 20px; color: var(--ink-soft); font-family: 'DM Sans', sans-serif; transition: background .25s ease, color .2s ease, transform .1s ease; }
   .tab:active { transform: scale(.94); }
   .tab .ti { font-size: 19px; line-height: 1; } .tab .tl { font-size: 10.5px; font-weight: 700; }
@@ -725,7 +725,7 @@
   function applyTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     $('theme-btn').innerHTML = t === 'dark' ? SUN_SVG : MOON_SVG;
-    const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.setAttribute('content', t === 'dark' ? '#15120e' : '#2f6b4f');
+    const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.setAttribute('content', t === 'dark' ? '#15120e' : '#f4efe6');
   }
   const ua = navigator.userAgent || '';
   const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
