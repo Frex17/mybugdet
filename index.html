@@ -77,6 +77,13 @@
   .bar { height: 7px; border-radius: 4px; background: rgba(255,255,255,.25); margin-top: 18px; overflow: hidden; }
   .bar > i { display: block; height: 100%; background: #fff; border-radius: 4px; transition: width .4s ease; }
   .breakdown { display: flex; justify-content: space-between; font-size: 12px; margin-top: 9px; opacity: .9; }
+  .bk-note { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 12px; }
+  .bkbtn { display: block; width: 100%; margin: 8px 0 0; padding: 12px; border-radius: 12px; border: 1px solid var(--green); background: var(--green); color: #fff; font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+  .bkbtn.alt { background: none; color: var(--green); }
+  .bkarea { width: 100%; box-sizing: border-box; margin-top: 10px; min-height: 76px; padding: 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--field); color: var(--ink); font-family: ui-monospace, Menlo, monospace; font-size: 11px; resize: vertical; }
+  .bk-msg { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
+  .bk-msg.ok { color: var(--green); }
+  .bk-msg.err { color: var(--clay); }
   .reset { display:block; margin: 26px auto 0; background: none; border: none; color: var(--ink-soft); font-size: 12.5px; text-decoration: underline; cursor: pointer; }
   .label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .newmonth { border: 1px solid var(--gold); background: var(--gold-soft); color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 20px; cursor: pointer; }
@@ -237,6 +244,17 @@
         <div class="cal-note" id="cal-note"></div>
       </div>
     </div>
+    <div class="card cal-card">
+      <button class="cal-toggle"><span>💾 Backup dei dati</span><span class="chev">›</span></button>
+      <div class="cal-body">
+        <div class="bk-note">Salva una copia di tutto (budget, previsione, debiti). Conservala nelle Note: se cambi telefono o reinstalli l'app, la rimetti da qui.</div>
+        <button class="bkbtn" id="bk-export">Copia il backup</button>
+        <textarea class="bkarea" id="bk-area" placeholder="Incolla qui un backup e premi Ripristina"></textarea>
+        <button class="bkbtn alt" id="bk-import">Ripristina dal backup</button>
+        <div class="bk-msg" id="bk-msg"></div>
+      </div>
+    </div>
+
     <button class="reset" id="reset">Azzera tutti i dati</button>
   </div>
 
@@ -804,6 +822,33 @@
     debts.items.push({ id: debts.nextId++, name, group, rata, day: isNaN(day) ? 1 : Math.round(day), remaining: Math.round(rem), checked: isoOf(new Date()) });
     $('d-name').value = ''; $('d-rata').value = ''; $('d-day').value = ''; $('d-rem').value = '';
     saveDebts(); renderDebts();
+  };
+
+  /* ===== BACKUP ===== */
+  const BK_KEYS = ['budget:data', 'budget:prev7', 'budget:debts3', 'budget:theme'];
+  function bkMsg(t, ok) { const e = $('bk-msg'); e.textContent = t; e.className = 'bk-msg ' + (ok ? 'ok' : 'err'); }
+  $('bk-export').onclick = () => {
+    const o = {};
+    BK_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v !== null) o[k] = v; });
+    const txt = JSON.stringify({ app: 'budget', v: 1, date: isoOf(new Date()), data: o });
+    $('bk-area').value = txt;
+    const manuale = () => { $('bk-area').focus(); $('bk-area').select(); bkMsg('Backup pronto qui sotto: tienilo premuto e scegli Copia.', true); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(() => bkMsg('Backup copiato. Incollalo nelle Note per conservarlo.', true), manuale);
+    } else manuale();
+  };
+  $('bk-import').onclick = () => {
+    const raw = $('bk-area').value.trim();
+    if (!raw) { bkMsg('Incolla prima il backup nel riquadro qui sopra.', false); return; }
+    let p = null;
+    try { p = JSON.parse(raw); } catch (e) { bkMsg('Questo testo non e un backup valido.', false); return; }
+    const d = p && p.data;
+    if (!d || typeof d !== 'object') { bkMsg('Questo testo non e un backup valido.', false); return; }
+    if (!confirm('Sostituisco i dati attuali con quelli del backup?')) return;
+    try { BK_KEYS.forEach(k => { if (d[k] != null) localStorage.setItem(k, d[k]); }); }
+    catch (e) { bkMsg('Non riesco a salvare sul telefono.', false); return; }
+    bkMsg('Dati ripristinati. Ricarico la pagina...', true);
+    setTimeout(() => location.reload(), 800);
   };
 
   loadBudget(); loadPrev(); loadDebts();
