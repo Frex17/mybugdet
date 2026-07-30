@@ -295,11 +295,11 @@
         <div class="fxrow"><div class="fxl">Stipendio base</div><b id="fx-stip">€ 0</b></div>
         <div class="fxrow"><div class="fxl">Indennità agg. volo</div><b id="fx-agg">€ 0</b></div>
         <div class="fxrow"><div class="fxl">IVMG <small>(ind. volo minima garantita)</small></div><b id="fx-ivmg">€ 0</b></div>
-        <div class="fxrow"><div class="fxl">Somma aggiuntiva esente</div><b id="fx-esente">€ 0</b></div>
+        <div class="fxrow"><div class="fxl">Somma aggiuntiva esente <small>(a mano · dalla busta)</small></div><input class="pinput pin-sm" id="fx-esente" type="text" inputmode="decimal" placeholder="0" /></div>
         <div class="fxrow" id="fx-bonus-row"><label class="fxchk" for="fx-bonus-chk"><input type="checkbox" id="fx-bonus-chk"> Bonus 100€ <small id="fx-bonus-note"></small></label><b id="fx-bonus">€ 0</b></div>
         <div class="fxsec ded">Trattenute</div>
         <div class="fxrow"><div class="fxl">Contributi INPS <small>(previdenza)</small><span class="fxeq">= FPLD + Fondo Volo + FIS + CIGS + solidarietà</span></div><b id="fx-inps">€ 0</b></div>
-        <div class="fxrow"><div class="fxl">Fondo integrativo <small>(a mano · dalla busta)</small></div><input class="pinput pin-sm" id="fx-fondo" type="text" inputmode="decimal" placeholder="0" /></div>
+        <div class="fxrow"><div class="fxl">Fondo integrativo <small>(versamento volontario · dalla busta)</small></div><input class="pinput pin-sm" id="fx-fondo" type="text" inputmode="decimal" placeholder="0" /></div>
         <div class="fxrow"><div class="fxl">Detrazioni fiscali <small>(a mano · dalla busta)</small></div><input class="pinput pin-sm" id="fx-detr" type="text" inputmode="decimal" placeholder="0" /></div>
         <div class="fxrow"><div class="fxl">IRPEF <small>(sul fisso · metà indennità volo esente)</small></div><b id="fx-irpef">€ 0</b></div>
         <div class="fxrow"><div class="fxl">Add. regionale <small>(residenza · a mano)</small></div><input class="pinput pin-sm" id="fx-addreg" type="text" inputmode="decimal" placeholder="0" /></div>
@@ -530,10 +530,10 @@
   const IRPEF = 23;        // primo scaglione
   const SIND = 5;          // quota sindacato (se iscritto)
   const RANKS = {
-    JU:   { stip:248.85, agg:83.33, ivmg:683.00,  esente:40.14, detr:175.00, fondo:32.23, bonus:101.92, bonusToggle:true,  inps:204.18, css:false, vto:47.43, rhfa:4.80, rhfa600:5.38, rcss:0, rcss600:0, rfest:35.00, rnight:45.00, rdiaria:42.11, rtrain:36.30 },
-    JUPU: { stip:327.69, agg:83.33, ivmg:821.58,  esente:61.16, detr:166.04, fondo:32.23, bonus:101.92, bonusToggle:false, inps:204.18, css:true,  vto:58.27, rhfa:5.90, rhfa600:6.47, rcss:7.14, rcss600:8.41, rfest:42.04, rnight:45.00, rdiaria:42.11, rtrain:40.30 },
-    PU:   { stip:411.54, agg:83.33, ivmg:1325.25, esente:40.00, detr:100.00, fondo:32.23, bonus:101.92, bonusToggle:false, inps:204.18, css:false, vto:0, rhfa:7.14, rhfa600:8.41, rcss:0, rcss600:0, rfest:49.55, rnight:45.00, rdiaria:42.11, rtrain:46.94 }
-  };  const PDEF = { rank: null, sind: false, bonusOn: true, addReg: 0, addCom: 0, detr: 166.04, fondo: 32.23, recup: 0, ytd: 0, sales: [], nextSale: 1,
+    JU:   { stip:248.85, agg:83.33, ivmg:683.00,  esente:38.45, detr:166.04, fondo:0,     bonus:101.92, bonusOn:true,  inps:204.18, css:false, rhfa:4.80, rhfa600:5.38, rcss:0, rcss600:0, rfest:35.00, rnight:45.00, rdiaria:42.11, rtrain:36.30 },
+    JUPU: { stip:327.69, agg:83.33, ivmg:821.58,  esente:61.16, detr:166.04, fondo:32.23, bonus:101.92, bonusOn:true,  inps:204.18, css:true,  rhfa:5.90, rhfa600:6.47, rcss:7.14, rcss600:8.41, rfest:42.04, rnight:45.00, rdiaria:42.11, rtrain:40.30 },
+    PU:   { stip:411.54, agg:83.33, ivmg:1325.25, esente:65.82, detr:166.04, fondo:0,     bonus:101.92, bonusOn:false, inps:225.01, css:false, rhfa:7.14, rhfa600:8.41, rcss:0, rcss600:0, rfest:49.55, rnight:45.00, rdiaria:42.11, rtrain:46.94 }
+  }; const PDEF = { rank: null, sind: false, bonusOn: true, addReg: 0, addCom: 0, detr: 166.04, fondo: 32.23, esente: 61.16, recup: 0, ytd: 0, sales: [], nextSale: 1,
                  hfa: 0, css: 0, night: 0, bank: 0, ferie: 0, standby: 0, fly: 0, extra1: 0, extra2: 0, extra3: 0, vto: 0, train: 0,
                  rhfa: 5.90, rhfa600: 6.47, rcss: 7.14, rcss600: 8.41, rfest: 42.04, rnight: 45.00, rdiaria: 42.11, rtrain: 40.30 };
   let prev = Object.assign({}, PDEF);
@@ -551,7 +551,7 @@
     $('fx-addreg').value = toField(prev.addReg);
     $('fx-addcom').value = toField(prev.addCom);
     $('i-ytd').value = toField(prev.ytd);
-    $('fx-detr').value = toField(prev.detr); $('fx-fondo').value = toField(prev.fondo); $('fx-recup').value = toField(prev.recup);
+    $('fx-detr').value = toField(prev.detr); $('fx-fondo').value = toField(prev.fondo); $('fx-esente').value = toField(prev.esente); $('fx-recup').value = toField(prev.recup);
     applyRank(); renderSales(); renderPrev(); savePrev();
   }
   function savePrev() { try { localStorage.setItem(PKEY, JSON.stringify(prev)); } catch (e) {} }
@@ -562,21 +562,18 @@
     const isJupu = !!(r && r.css);
     $('field-css').style.display = isJupu ? '' : 'none';
     $('field-rcss').style.display = isJupu ? '' : 'none';
-    const showBonus = !!(r && r.bonus > 0) || (r && r.bonusToggle);
-    $('fx-bonus-row').style.display = showBonus ? '' : 'none';
-    const tog = !!(r && r.bonusToggle);
-    $('fx-bonus-chk').style.display = tog ? '' : 'none';
-    $('fx-bonus-note').textContent = tog ? '(spunta per contarlo nel mese)' : '(fisso ogni mese)';
+    $('fx-bonus-row').style.display = r ? '' : 'none';
+    $('fx-bonus-chk').style.display = '';
+    $('fx-bonus-note').textContent = '(dipende dal reddito; se salta un mese torna a conguaglio)';
     if (!prev.rank) $('fx-note').textContent = 'Scegli il grado qui sopra per caricare le voci fisse.';
     else if (r.stip === 0 && r.ivmg === 0) $('fx-note').textContent = 'Dati ' + prev.rank + ' non ancora inseriti \u2014 in arrivo.';
-    else if (prev.rank === 'PU') $('fx-note').textContent = 'PU: retribuzioni da contratto, tasse stimate (in attesa di una busta reale). Addizionali a mano.';
-    else $('fx-note').textContent = 'Voci fisse del grado ' + prev.rank + '. Le addizionali dipendono dalla residenza: inseriscile a mano una volta.';
+    else $('fx-note').textContent = 'Voci fisse del grado ' + prev.rank + '. I campi a mano (fondo, detrazioni, esente, addizionali, recuperi) vanno copiati una volta dalla tua busta: cambiano da persona a persona.';
   }
 
   function setRank(k) {
     prev.rank = k;
     const r = RANKS[k];
-    prev.detr = r.detr; prev.fondo = r.fondo;
+    prev.detr = r.detr; prev.fondo = r.fondo; prev.esente = r.esente; prev.bonusOn = r.bonusOn;
     prev.rhfa = r.rhfa; prev.rhfa600 = r.rhfa600; prev.rcss = r.rcss; prev.rcss600 = r.rcss600; prev.rfest = r.rfest; prev.rnight = r.rnight; prev.rdiaria = r.rdiaria; prev.rtrain = r.rtrain;
     for (const key in CF) $(CF[key]).value = toField(prev[key]);
     savePrev(); applyRank(); renderPrev();
@@ -603,7 +600,7 @@
 
   function renderPrev() {
     const g = prev;
-    const r = g.rank ? RANKS[g.rank] : { stip:0, agg:0, ivmg:0, esente:0, detr:0, fondo:0, bonus:0, bonusToggle:false, inps:0, css:false, vto:0, rtrain:0 };
+    const r = g.rank ? RANKS[g.rank] : { stip:0, agg:0, ivmg:0, esente:0, detr:0, fondo:0, bonus:0, inps:0, css:false, rtrain:0 };
     const cssH = r.css ? g.css : 0;
     const ytd = g.ytd || 0;
     const remH = Math.max(0, 600 - ytd);
@@ -614,7 +611,8 @@
     const eCss = cssLow * g.rcss + cssHigh * (g.rcss600 || g.rcss);
     const eNight = g.night * g.rnight, eBank = g.bank * g.rfest,
           eFerie = g.ferie * g.rfest, eStandby = g.standby * g.rdiaria, eFly = g.fly * g.rdiaria, eExtra1 = g.extra1 * g.rdiaria, eExtra2 = g.extra2 * (g.rdiaria + 21), eExtra3 = g.extra3 * g.rdiaria, eExtra = eExtra1 + eExtra2 + eExtra3;
-    const eVto = g.vto * (r.vto || 0);
+    const vtoRate = (r.stip + r.agg + r.ivmg) / 19;   // un giorno di permesso non pagato
+    const eVto = g.vto * vtoRate;
     const eTrain = g.train * g.rtrain;
     $('d-hfa').textContent = '\u00d7 ' + r2(g.rhfa) + ' \u20ac/h \u00b7 oltre 600h ' + r2(g.rhfa600 || g.rhfa) + ' \u20ac \u00b7 tassabile al 50%';
     $('d-css').textContent = '\u00d7 ' + r2(g.rcss) + ' \u20ac/h (come n.1) \u00b7 tassabile al 50%';
@@ -623,36 +621,39 @@
     $('d-ferie').textContent = '\u00d7 ' + r2(g.rfest) + ' \u20ac \u00b7 tassabile';
     $('d-standby').textContent = 'no-fly \u00b7 ' + r2(g.rdiaria) + ' \u20ac/g \u00b7 tassabile';
     $('d-fly').textContent = r2(g.rdiaria) + ' \u20ac/g \u00b7 esentasse';
-    $('d-vto').textContent = (r.vto ? ('\u00d7 ' + r2(r.vto) + ' \u20ac/g \u00b7 detrazione') : 'giorni non pagati \u00b7 detrazione');
+    $('d-vto').textContent = (vtoRate ? ('\u00d7 ' + r2(vtoRate) + ' \u20ac/g \u00b7 costo netto minore: abbassa anche le tasse') : 'giorni non pagati');
     $('d-train').textContent = '\u00d7 ' + r2(g.rtrain) + ' \u20ac/g \u00b7 tassabile';
     $('v-hfa').textContent = fmt0.format(eHfa); $('v-css').textContent = fmt0.format(eCss); $('v-night').textContent = fmt0.format(eNight);
     $('v-bank').textContent = fmt0.format(eBank); $('v-ferie').textContent = fmt0.format(eFerie); $('v-standby').textContent = fmt0.format(eStandby);
     $('v-fly').textContent = fmt0.format(eFly); $('v-extra1').textContent = fmt0.format(eExtra1); $('v-extra2').textContent = fmt0.format(eExtra2); $('v-extra3').textContent = fmt0.format(eExtra3); $('v-train').textContent = fmt0.format(eTrain);
-    $('v-vto').textContent = eVto ? ('\u2212 ' + fmt0.format(eVto)) : fmt0.format(0);
-    const bonusVal = r.bonusToggle ? (g.bonusOn ? r.bonus : 0) : r.bonus;
+    $('v-vto').textContent = eVto ? ('\u2212 ' + fmt0.format(eVto)) : fmt0.format(0);   // lordo; il netto e' minore
+    const bonusVal = g.bonusOn ? r.bonus : 0;
     const sind = g.sind ? SIND : 0;
     $('fx-stip').textContent = fmt0.format(r.stip); $('fx-agg').textContent = fmt0.format(r.agg); $('fx-ivmg').textContent = fmt0.format(r.ivmg);
-    $('fx-esente').textContent = fmt0.format(r.esente); $('fx-bonus').textContent = fmt0.format(bonusVal);
+    $('fx-bonus').textContent = fmt0.format(bonusVal);
     // Personale navigante: le indennita di volo fanno reddito solo per meta (art. 51 TUIR).
     const tr = IRPEF / 100, trH = tr * 0.5;
+    const fissoTot = r.stip + r.agg + r.ivmg;
+    const quotaTax = fissoTot ? (r.stip + 0.5 * (r.agg + r.ivmg)) / fissoTot : 0;
     const impFisso = r.stip + 0.5 * (r.agg + r.ivmg) - r.inps - g.fondo;
     const irpefFisso = tr * impFisso - g.detr;
     $('fx-inps').textContent = '\u2212 ' + fmt0.format(r.inps);
     $('fx-irpef').textContent = (irpefFisso < 0 ? '+ ' : '\u2212 ') + fmt0.format(Math.abs(irpefFisso));
     $('fx-sind').textContent = '\u2212 ' + fmt0.format(sind);
-    const base = r.stip + r.agg + r.ivmg + r.esente + bonusVal - r.inps - g.fondo - irpefFisso - g.addReg - g.addCom - sind - g.recup;
+    const base = r.stip + r.agg + r.ivmg + g.esente + bonusVal - r.inps - g.fondo - irpefFisso - g.addReg - g.addCom - sind - g.recup;
     const ivo = eHfa + eCss;
     const halfTax = ivo + eBank + eFerie;               // indennita di volo: tassabili al 50%
     const fullTax = eNight + eStandby + eTrain;          // tassabili per intero
     const taxfree = eFly + eExtra;
-    const net = base + taxfree + halfTax * (1 - trH) + fullTax * (1 - tr) - eVto;
+    const vtoCost = eVto * (1 - tr * quotaTax);   // il permesso non pagato riduce anche le tasse
+    const net = base + taxfree + halfTax * (1 - trH) + fullTax * (1 - tr) - vtoCost;
     $('pf-net').textContent = fmt.format(base);
     $('prev-net').textContent = fmt.format(net);
     $('pb-base').textContent = fmt.format(base); $('pb-ivo').textContent = fmt.format(ivo * (1 - trH));
     $('pb-fly').textContent = fmt.format(taxfree);
     $('pb-tax').textContent = fmt.format((halfTax - ivo) * (1 - trH) + fullTax * (1 - tr));
     const annualH = ytd + g.hfa + cssH;
-    $('prev-note').textContent = g.rank ? ('Grado ' + g.rank + ' \u00b7 volo mese ' + (g.hfa + cssH) + ' h \u00b7 anno ' + annualH.toFixed(0) + ' h' + (annualH > 600 ? ' (oltre 600: magg.)' : '') + (eVto ? (' \u00b7 VTO \u2212' + fmt0.format(eVto)) : '') + '. Stima.') : 'Scegli il grado per la stima.';
+    $('prev-note').textContent = g.rank ? ('Grado ' + g.rank + ' \u00b7 volo mese ' + (g.hfa + cssH) + ' h \u00b7 anno ' + annualH.toFixed(0) + ' h' + (annualH > 600 ? ' (oltre 600: magg.)' : '') + (eVto ? (' \u00b7 VTO \u2212' + fmt0.format(vtoCost)) : '') + '. Stima.') : 'Scegli il grado per la stima.';
   }
 
   ['JU','JUPU','PU'].forEach(k => { $('rk-'+k).onclick = () => setRank(k); });
@@ -660,7 +661,7 @@
   $('fx-bonus-chk').addEventListener('change', e => { prev.bonusOn = e.target.checked; savePrev(); renderPrev(); });
   $('fx-addreg').addEventListener('input', e => { const n = parseNum(e.target.value); prev.addReg = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
   $('fx-addcom').addEventListener('input', e => { const n = parseNum(e.target.value); prev.addCom = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
-  ['detr','fondo','recup'].forEach(k => {
+  ['detr','fondo','esente','recup'].forEach(k => {
     $('fx-' + k).addEventListener('input', e => { const n = parseNum(e.target.value); prev[k] = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
   });
   $('i-ytd').addEventListener('input', e => { const n = parseNum(e.target.value); prev.ytd = isNaN(n) ? 0 : n; savePrev(); renderPrev(); });
@@ -680,7 +681,7 @@
     const cssCount = (RANKS[prev.rank] && RANKS[prev.rank].css) ? (prev.css || 0) : 0;
     prev.ytd = (prev.ytd || 0) + (prev.hfa || 0) + cssCount;
     $('i-ytd').value = toField(prev.ytd);
-    $('fx-detr').value = toField(prev.detr); $('fx-fondo').value = toField(prev.fondo); $('fx-recup').value = toField(prev.recup);
+    $('fx-detr').value = toField(prev.detr); $('fx-fondo').value = toField(prev.fondo); $('fx-esente').value = toField(prev.esente); $('fx-recup').value = toField(prev.recup);
     for (const k in QF) { prev[k] = 0; $(QF[k]).value = ''; }
     prev.sales = [];
     savePrev(); renderSales(); renderPrev();
